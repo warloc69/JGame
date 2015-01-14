@@ -1,2 +1,4 @@
 /Java_server/.gradle
 /Java_server/build
+/Java_server/.idea
+/Java_server/*.iml

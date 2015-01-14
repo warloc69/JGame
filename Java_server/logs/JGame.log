@@ -1,0 +1,11 @@
+2015-01-14 13:50:17,668 [Time-limited test] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61808,localport=48670]
+2015-01-14 13:50:17,678 [Thread-0] DEBUG org.jgame.server.core.SimpleServerTest.lambda$runClientOn$0 - Response from server: Who are you at all?
+2015-01-14 13:51:38,304 [Time-limit] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61865,localport=48670]
+2015-01-14 13:52:31,606 [Time-limited te] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61887,localport=48670]
+2015-01-14 13:53:06,534 [Time-limited test] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61911,localport=48670]
+2015-01-14 13:55:18,275 [Time-limited test] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61988,localport=48670]
+2015-01-14 13:55:18,284 [Client on 48670] DEBUG org.jgame.server.core.SimpleServerTest.lambda$runClientOn$0 - I'm done
+2015-01-14 13:57:02,223 [Time-limited test] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=62059,localport=48670]
+2015-01-14 13:57:02,233 [Client on 48670] DEBUG org.jgame.server.core.SimpleServerTest.lambda$runClientOn$0 - I'm done
+2015-01-14 13:57:35,429 [Time-limited test                       ] DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=62085,localport=48670]
+2015-01-14 13:57:35,440 [Client on 48670                         ] DEBUG org.jgame.server.core.SimpleServerTest.lambda$runClientOn$0 - I'm done
