@@ -1,5 +1,5 @@
-/Java_server/.gradle
-/Java_server/build
-/Java_server/.idea
-/Java_server/*.iml
-/Java_server/logs
+/Server/*.iml
+/Server/logs
+/Server/build
+/Server/.idea
+/Server/.gradle
