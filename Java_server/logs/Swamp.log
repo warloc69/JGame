@@ -1,2 +1,0 @@
-2015-01-14 13:48:38,404 DEBUG org.jgame.server.core.SimpleServer.acceptClient - Client accepted as Socket[addr=/127.0.0.1,port=61714,localport=48670]
-2015-01-14 13:48:38,414 DEBUG org.jgame.server.core.SimpleServerTest.lambda$runClientOn$0 - Response from server: Who are you at all?
