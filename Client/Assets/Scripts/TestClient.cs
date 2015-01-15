@@ -17,7 +17,8 @@ public class TestClient : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var mainPlayer = GameObject.Find("MainPlayer");
+        var mainPlayer = GameObject.Find("MainPlayer");         
+		Logger.log("dd"); 
         var mainPos = mainPlayer.transform.position;
         Debug.Log("GUIIII I am alive! oooo" + mainPos.ToString());
         try{
@@ -29,7 +30,7 @@ public class TestClient : MonoBehaviour {
             sw.Flush();            
             sr = new StreamReader(ns);
             streamIsReady = true;
-            
+			Logger.log(" worked");
         } catch(Exception e){Console.WriteLine(e);}
         
     }
