@@ -5,9 +5,6 @@ package org.jgame.server.core;
  */
 public class IllegalPortRangeException extends RuntimeException {
 
-    public IllegalPortRangeException() {
-    }
-
     public IllegalPortRangeException(int port){
         super(port + "");
     }
