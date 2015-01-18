@@ -5,7 +5,7 @@ package org.jgame.protocol;
  *
  * Created by dgroup on 17.01.15.
  */
-public class MessageRules {
+public final class MessageRules {
     private MessageRules() {
     }
 
@@ -18,8 +18,8 @@ public class MessageRules {
         notEmpty(message.data(), "Data can't be empty");
     }
 
-    private static void notEmpty(byte[] command, String s) {
+    private static void notEmpty(byte[] command, String errorMessage) {
         if (command.length == 0)
-            throw new IllegalArgumentException(s);
+            throw new IllegalArgumentException(errorMessage);
     }
 }

@@ -47,16 +47,16 @@ public class RegistrationData implements Data {
      * */
     @Override
     public void init(byte[] data) {
-        try(ByteArrayInputStream in = new ByteArrayInputStream(data)) {
+        try(ByteArrayInputStream inp = new ByteArrayInputStream(data)) {
 
-            int lenght = in.read();
+            int lenght = inp.read();
             byte[] login = new byte[lenght];
-            IOUtils.read(in, login);
+            IOUtils.read(inp, login);
             setUser(new String(login));
 
-            lenght = in.read();
+            lenght = inp.read();
             byte[] pass = new byte[lenght];
-            IOUtils.read(in, pass);
+            IOUtils.read(inp, pass);
             setPass(new String(pass));
 
         } catch (IOException e) {

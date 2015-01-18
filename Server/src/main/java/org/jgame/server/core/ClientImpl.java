@@ -18,9 +18,9 @@ import java.net.Socket;
 public class ClientImpl implements Client {
     private static final Logger LOG = LoggerFactory.getLogger(ClientImpl.class);
 
-    private Socket socket;
-    private BufferedOutputStream toClient;
-    private BufferedInputStream fromClient;
+    private final Socket socket;
+    private final BufferedOutputStream toClient;
+    private final BufferedInputStream fromClient;
 
     public ClientImpl(Socket socket) throws IOException {
         Validate.notNull(socket, "Socket can't be a null");

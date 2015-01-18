@@ -20,7 +20,8 @@ public class ServerImpl implements Server {
     }
 
     private boolean isFreePort(int port){
-        return (port >= 48660 && port <= 48999) || (port >= 49001 && port <= 49150);
+        return  port >= 48660 && port <= 48999 ||
+                port >= 49001 && port <= 49150;
     }
 
 

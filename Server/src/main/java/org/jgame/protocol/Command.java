@@ -20,11 +20,11 @@ public enum Command {
 
     private byte commandId;
 
-    Command(int id){
-        this((byte) id);
+    Command(int cmd){
+        this((byte) cmd);
     }
-    Command(byte id){
-        this.commandId = id;
+    Command(byte cmd){
+        this.commandId = cmd;
     }
 
 

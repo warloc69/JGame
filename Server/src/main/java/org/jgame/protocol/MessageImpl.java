@@ -7,38 +7,38 @@ import org.jgame.protocol.data.Data;
  * Created by dgroup on 17.01.15.
  */
 public class MessageImpl implements Message {
-    private Command command;
-    private Data data;
-    private short userId;
+    private Command cmd;
+    private Data dataBlock;
+    private short user;
 
-    public MessageImpl(Command comm, int userId, Data data){
-        this(comm, (short) userId, data);
+    public MessageImpl(Command cmd, int userId, Data data){
+        this(cmd, (short) userId, data);
     }
 
-    public MessageImpl(Command command, short userId, Data data){
-        Validate.notNull(command,   "Command can't be a null");
+    public MessageImpl(Command cmd, short userId, Data data){
+        Validate.notNull(cmd,       "Command can't be a null");
         Validate.isTrue (userId > 0,"User id can't be less than 0");
         Validate.notNull(data,      "Data can't be a null");
 
-        this.command = command;
-        this.userId = userId;
-        this.data = data;
+        this.cmd = cmd;
+        this.user = userId;
+        this.dataBlock = data;
     }
 
     @Override
     public byte[] command() {
-        return command.toByteArray();
+        return cmd.toByteArray();
     }
 
     @Override
     public byte[] userId() {
-        return new byte[] { (byte) ((userId & 0xFF00) >> 8),
-                            (byte) (userId & 0x00FF) };
+        return new byte[] { (byte)((user & 0xFF00) >> 8),
+                            (byte)( user & 0x00FF) };
     }
 
     @Override
     public byte[] data() {
-        return data.toByteArray();
+        return dataBlock.toByteArray();
     }
 
     /**
@@ -49,12 +49,12 @@ public class MessageImpl implements Message {
      */
     @Override
     public <T> T data(Class<T> type) {
-        return type.cast(data);
+        return type.cast(dataBlock);
     }
 
 
     @Override
     public String toString() {
-        return "MessageImpl{ command=" + command + ", userId=" + userId + '}';
+        return "MessageImpl{ command=" + cmd + ", userId=" + user + '}';
     }
 }

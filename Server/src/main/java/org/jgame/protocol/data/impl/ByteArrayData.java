@@ -17,12 +17,12 @@ public class ByteArrayData implements Data {
 
     @Override
     public byte[] toByteArray() {
-        return data;
+        return Arrays.copyOf(data, data.length);
     }
 
     @Override
     public void init(byte[] data) {
-        this.data = data;
+        this.data = Arrays.copyOf(data, data.length);
     }
 
     @Override

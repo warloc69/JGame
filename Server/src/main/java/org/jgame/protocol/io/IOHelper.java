@@ -15,42 +15,48 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * Allows to perform atomic read/write byte operation.
+ *
  * Created by dgroup on 17.01.15.
  */
-public class IOHelper {
+public final class IOHelper {
     private static final Logger LOG = LoggerFactory.getLogger(IOHelper.class);
 
     private IOHelper(){
     }
 
-    public static Message readMessage(InputStream in) throws IOException {
-        Command cmd = readCommand(in);
-        short user  = readUser(in);
-        Data data   = readData(cmd, in);
+    public static Message readMessage(InputStream inp) throws IOException {
+        Command cmd = readCommand(inp);
+        short user  = readUser(inp);
+        Data data   = readData(cmd, inp);
         return new MessageImpl(cmd, user, data);
     }
 
-    static Data readData(Command cmd, InputStream in) throws IOException {
-        Data received = DataBuilder.build(cmd, read(in));
+
+    static Data readData(Command cmd, InputStream inp) throws IOException {
+        Data received = DataBuilder.build(cmd, read(inp));
         LOG.debug("received: {}", received);
         return received;
     }
 
-    static short readUser(InputStream in) throws IOException {
-        return Utils.toShort(read(in));
+
+    static short readUser(InputStream inp) throws IOException {
+        return Utils.toShort(read(inp));
     }
 
-    static Command readCommand(InputStream in) throws IOException {
-        Command comm = Command.toCommand( read(in) );
+
+    static Command readCommand(InputStream inp) throws IOException {
+        Command comm = Command.toCommand(read(inp));
         LOG.debug("received: {}", comm);
         return comm;
     }
 
-    static byte[] read(InputStream in) throws IOException {
-        int len = in.read();
+
+    static byte[] read(InputStream inp) throws IOException {
+        int len = inp.read();
         if (len > 0) {
             byte[] data = new byte[len];
-            IOUtils.read(in, data);
+            IOUtils.read(inp, data);
             return data;
         } else
             return new byte[0];
