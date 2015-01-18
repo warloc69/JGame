@@ -15,9 +15,9 @@ public class MessageTest {
 
     @Test
     public void dataConvertation(){
-        Message m = new MessageImpl(FIRE, 1, new RegistrationData("Tom", "12345"));
+        Message msg = new MessageImpl(FIRE, 1, new RegistrationData("Tom", "12345"));
 
-        RegistrationData data = m.data(RegistrationData.class);
+        RegistrationData data = msg.data(RegistrationData.class);
         assertNotNull("Data can't be a null", data);
         assertEquals("User's aren't match", data.getUser(), "Tom");
     }

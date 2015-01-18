@@ -4,7 +4,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jgame.protocol.Command;
 import org.jgame.protocol.Message;
 import org.jgame.protocol.MessageImpl;
-import org.jgame.protocol.data.impl.ByteArrayData;
 import org.jgame.protocol.data.impl.RegistrationData;
 import org.jgame.protocol.io.IOHelper;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import java.net.Socket;
 import static org.jgame.protocol.Command.ACTION;
 import static org.jgame.protocol.Command.toCommand;
 import static org.jgame.protocol.io.IOHelper.sendMessage;
+import static org.junit.Assert.fail;
 
 /**
  * This is simple client stub just for testing activities
@@ -28,7 +28,7 @@ public class ClientStub implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ClientStub.class);
     public static final int USER_ID = 100;
 
-    private int port;
+    private final int port;
 
     public ClientStub(int port){
         this.port = port;
@@ -36,9 +36,9 @@ public class ClientStub implements Runnable {
 
     @Override
     public void run() {
-        try(Socket s = new Socket("localhost", port)){
-            InputStream in = s.getInputStream();
-            OutputStream out = s.getOutputStream();
+        try(Socket srv = new Socket("localhost", port)){
+            InputStream inp = srv.getInputStream();
+            OutputStream out = srv.getOutputStream();
 
             // Registration request
             RegistrationData reqData = new RegistrationData("Tom", "12345");
@@ -46,16 +46,15 @@ public class ClientStub implements Runnable {
             send(out, reqRequest);
             LOG.debug("Registration request has been sent, waiting for response...");
 
-            Message reqResponse = IOHelper.readMessage(in);
+            Message reqResponse = IOHelper.readMessage(inp);
             if (Command.REGISTRATION_RESPONSE != toCommand( reqResponse.command() ))
                 stopTesting("Wrong server's response: " + toCommand( reqResponse.command() ));
 
             LOG.debug("You have successfully registered, let's send some action");
             send(out, new MessageImpl(ACTION, USER_ID, new SomeActionData()));
 
-        } catch (Exception e) {
-            LOG.error("Communication failed", e);
-            stopTesting( ExceptionUtils.getStackTrace(e) ); // extract and send stack trace
+        } catch (IOException e) {
+            fail( ExceptionUtils.getStackTrace(e) );
         }
     }
 

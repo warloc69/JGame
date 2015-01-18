@@ -22,8 +22,7 @@ import static org.junit.Assert.fail;
  */
 public class ServerImplTest {
     private static final Logger LOG = LoggerFactory.getLogger(ServerImplTest.class);
-    private static final int TWO_SECONDS = 3 * 1000;
-    private static final int THREE_SECONDS = TWO_SECONDS + 1000;
+    private static final int TWO_SECONDS = 2 * 1000;
 
     @Test(expected = IllegalPortRangeException.class)
     public void portRange() throws IOException {
