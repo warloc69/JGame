@@ -3,3 +3,9 @@
 /Server/build
 /Server/.idea
 /Server/.gradle
+/Client/Library/
+/Client/ProjectSettings/
+/Client/*.csproj
+/Client/*.sln
+/Client/*.userprefs
+/Client/*.unityproj
