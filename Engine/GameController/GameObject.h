@@ -18,16 +18,16 @@ class GameObject
 		GameObject(GameObjectMasks type);
 		~GameObject();
 
-		uint32 getID();
+		DLL_EXPORT uint32 getID();
 		void setID(uint32 id);
-		uint16 getType();
-		uint64 getGUID();
+		DLL_EXPORT uint16 getType();
+		DLL_EXPORT uint64 getGUID();
 
-		GHVECTOR getPosition();
-		GHVECTOR getRotation();
+		DLL_EXPORT GHVECTOR getPosition();
+		DLL_EXPORT GHVECTOR getRotation();
 
-		void move(GHVECTOR v);
-		void rotate(GHVECTOR v);
+		DLL_EXPORT void move(GHVECTOR v);
+		DLL_EXPORT void rotate(GHVECTOR v);
 
 	private:
 		uint64 m_guid;

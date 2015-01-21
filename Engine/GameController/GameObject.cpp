@@ -4,6 +4,7 @@
 
 GameObject::GameObject(GameObjectMasks type)
 {
+	m_guid = 0;
 	setType(type);
 	m_position = GHVECTOR();
 }

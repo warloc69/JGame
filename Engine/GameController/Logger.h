@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include <string>
-#include <sstream>
 #include "baseTypes.h"
+#include "Macro.h"
 
 enum LogLevel
 {
@@ -15,22 +14,6 @@ enum LogLevel
 };
 
 #define LOG_LEVEL LogLevel::TRACE
-
-template <class T> std::wstring toWString(const T & t)
-{
-	std::wostringstream oss;
-	oss.clear();
-	oss << t;
-	return oss.str();
-};
-
-template <class T> std::string toString(const T & t)
-{
-	std::ostringstream oss;
-	oss.clear();
-	oss << t;
-	return oss.str();
-};
 
 class Logger
 {

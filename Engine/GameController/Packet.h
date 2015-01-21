@@ -2,10 +2,10 @@
 #pragma once
 
 #include "baseTypes.h"
-#include <string>
-#include <vector>
 #include "Exception.h"
 #include "Logger.h"
+
+#include <vector>
 
 class Packet
 {
@@ -53,6 +53,22 @@ class Packet
 			return *this;
 		}
 
+		template <typename T, size_t N>
+		Packet& operator<<(T (&v)[N])
+		{
+			for(int i = 0; i < N; i++)
+				append(v[i]);
+			return *this;
+		}
+
+		template <typename T>
+		Packet& operator<<(std::vector<T> v)
+		{
+			for(T k : v) 
+				append(k);
+			return *this;
+		}
+
 		template <typename T>
 		Packet& operator<<(T v)
 		{
@@ -86,6 +102,18 @@ class Packet
 
 	private:
 		template <typename T>
+		T swapBytes(T v) 
+		{
+			T retVal;
+			char *pVal = (char*)&v;
+			char *pRetVal = (char*)&retVal;
+			int size = sizeof(T);
+			for(int i = 0; i < size; i++)
+				pRetVal[size-1-i] = pVal[i];
+			return retVal;
+		}
+		
+		template <typename T>
 		void append(const T v)
 		{
 			if(m_buffer.size() < m_write_pos + sizeof(T))
@@ -98,11 +126,11 @@ class Packet
 		template <typename T> T read()
 		{
 			if(m_read_pos + sizeof(T) > m_buffer.size())
-				throw Exception(L"Attempted to read Packet :: size=" + toWString(m_buffer.size()));
+				throw Exception(L"Attempted to read Packet :: size=" + toWString(m_buffer.size()) + L".\nReading out of array.");
 
 			T v;
 			memcpy(&v,&m_buffer[m_read_pos],sizeof(T));
 			m_read_pos += sizeof(T);
-			return v;
+			return swapBytes(v);
 		}
 };

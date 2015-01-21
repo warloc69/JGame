@@ -1,30 +1,29 @@
 
 #pragma once
 
-#define DLL_EXPORT   __declspec( dllexport )
-
 #include "GameObject.h"
 #include "Accessor.h"
-
-class ServerConsole;
 
 class GameController
 {
 	public:
-		friend ServerConsole;
-
-		static GameController* const getInstance();
+		DLL_EXPORT static GameController* const getInstance();
+		DLL_EXPORT void free();
 
 		DLL_EXPORT void spawnGameObject(GameObjectMasks type, GHVECTOR v);
-		void moveObject(uint32 objectID, GHVECTOR v);
-		void rotateObject(uint32 objectID, GHVECTOR v);
+		DLL_EXPORT void moveObject(uint32 objectID, GHVECTOR v);
+		DLL_EXPORT void rotateObject(uint32 objectID, GHVECTOR v);
+
+		DLL_EXPORT GameObject* findObject(uint32 id);
+
+		DLL_EXPORT int getSize();
 
 	protected:
-		DLL_EXPORT GameController();
-		DLL_EXPORT ~GameController();
-
-		DLL_EXPORT void Init();
+		GameController() {}
+		virtual ~GameController() {}
 
 	private:
-		Accessor<uint32,GameObject>* pGameObjects;
+		static Accessor<uint32,GameObject>* pGameObjects;
+		static GameController* pGameController;
+		static int m_counter;
 };

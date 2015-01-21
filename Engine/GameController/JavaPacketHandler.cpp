@@ -1,34 +1,33 @@
 
 #include "JavaPacketHandler.h"
+#include "Packets.h"
+#include "PacketHandler.h"
+
 #include "Logger.h"
 
-#include "PacketHandler.h"
-#include "Packets.h"
+//#include "Macro.h"
 
-JNIEXPORT void JNICALL Java_org_jgame_server_core_SimpleServer_sendPacketToGameServer(JNIEnv* pJniEnv, jclass pJClass, jbyteArray data)
+JNIEXPORT void JNICALL Java_org_jgame_server_core_EntryPoint_sendMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray data)
 {
 	// TODO: invoke to C++ server thread
 
-	printf("Java_org_jgame_server_core_SimpleServer_sendPacketToGameServer");
-	Logger::debug(L"Java_org_jgame_server_core_SimpleServer_sendPacketToGameServer", true);
+	printf("Java_org_jgame_server_core_EntryPoint_sendMessageToEngine");
+	Logger::debug(L"Java_org_jgame_server_core_EntryPoint_sendMessageToEngine", true);
 
 	// convert
     int len = pJniEnv->GetArrayLength(data);
     uint8* buf = new uint8[len];
     pJniEnv->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte*>(buf));
-
-	Logger::debug(L"len="+toWString(len), true);
+	std::vector<uint8> dataVector = ARRAY_TO_VECTOR(buf, len);
 
 	Packet p = Packet(len);
-	p << buf;
+	p << dataVector;
 	p.resetRead();
-
-	Logger::debug(L"asd", true);
 
 	uint16 opcodeID;
 	p >> opcodeID;
 
-	Logger::debug(L"opcodeID="+opcodeID, true);
+	Logger::debug(L"opcodeID="+toWString(opcodeID), true);
 
 	switch(opcodeID)
 	{

@@ -6,21 +6,52 @@
 
 void PacketHandler::handleMoveAndRotatePacket(Packet p)
 {
-	Logger::debug(L"PacketHandler::handleMoveAndRotatePacket start");
+	try {
+		Logger::debug(L"PacketHandler::handleMoveAndRotatePacket start", true);
 
-	p.resetRead();
+		p.resetRead();
 
-	uint16 opcodeID;
-	uint32 objectID;
-	float posX, posY, posZ, rotX, rotY, rotZ;
+		uint16 opcodeID;
+		uint32 objectID;
+		float posX, posY, posZ, rotX, rotY, rotZ;
 
-	p >> opcodeID >> objectID >> posX >> posY >> posZ >> rotX >> rotY >> rotZ;
+		p >> opcodeID >> objectID >> posX >> posY >> posZ >> rotX >> rotY >> rotZ;
 
-	GameController* gc = GameController::getInstance();
-	gc->moveObject(objectID, GHVECTOR(posX, posY, posZ));
-	gc->rotateObject(objectID, GHVECTOR(rotX, rotY, rotZ));
+		Logger::trace(L"objectID="+toWString(objectID), true);
+		Logger::trace(L"posX="+toWString(posX), true);
+		Logger::trace(L"posY="+toWString(posY), true);
+		Logger::trace(L"posZ="+toWString(posZ), true);
+		Logger::trace(L"rotX="+toWString(rotX), true);
+		Logger::trace(L"rotY="+toWString(rotY), true);
+		Logger::trace(L"rotZ="+toWString(rotZ), true);
 
-	Logger::debug(L"PacketHandler::handleMoveAndRotatePacket end");
+		GameController* gc = GameController::getInstance();
+		GameObject* go = gc->findObject(objectID);
+		std::wstring oldP;
+		if(go)
+		{
+			GHVECTOR pos = go->getPosition();
+			oldP = L"old_position X="+toWString(pos.x);
+		}
+
+		gc->moveObject(objectID, GHVECTOR(posX, posY, posZ));
+		gc->rotateObject(objectID, GHVECTOR(rotX, rotY, rotZ));
+
+		gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_CREATURE, GHVECTOR(1000,1000,77777));
+
+
+		// test movement
+		go = gc->findObject(objectID);
+		if(go)
+		{
+			GHVECTOR pos = go->getPosition();
+			Logger::debug(oldP + L" :: new_position X="+toWString(pos.x), true);
+		}
+
+		Logger::debug(L"PacketHandler::handleMoveAndRotatePacket end", true);
+	} catch(Exception e) {
+		Logger::error(e.getMessage(), true);
+	}
 }
 
 Packet PacketHandler::spawnGameObject(GameObject* go)

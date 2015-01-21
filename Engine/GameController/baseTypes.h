@@ -1,6 +1,8 @@
 
 #pragma once
 
+#define DLL_EXPORT   __declspec( dllexport )
+
 typedef signed   __int64  int64;
 typedef signed       int  int32;
 typedef signed     short  int16;

@@ -5,6 +5,6 @@
 
 extern "C" {
 
-JNIEXPORT void JNICALL Java_org_jgame_server_core_SimpleServer_sendPacketToGameServer(JNIEnv *, jclass, jbyteArray);
+JNIEXPORT void JNICALL Java_org_jgame_server_core_EntryPoint_sendMessageToEngine(JNIEnv *, jclass, jbyteArray);
 
 }
