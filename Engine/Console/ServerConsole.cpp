@@ -1,54 +1,95 @@
 
-#include "ServerConsole.h"
+#include <tchar.h>
+#include <iostream>
+#include <string>
+#include <Windows.h>
+#include <boost\thread\thread.hpp>
+
+#include "..\Integration\Shared.h"
 
 #pragma comment(lib, "GameController.lib")
 #include "..\GameController\GameController.h"
-#include "..\GameController\Macro.h"
 
-#include "..\GameController\Packet.h"
+#include "ServerConsole.h"
 
+// for memory leaks detect
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+// entry point
 int _tmain(int argc, _TCHAR* argv[])
 {
-// check for memory leaks
-#if defined(DEBUG) | defined(_DEBUG)
+	// check for memory leaks
+	#if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-// ----------------------
+	#endif
 
 	ServerConsole* sc = new ServerConsole();
 	sc->start();
-	SAFE_DELETE_P(sc);
-		
+	delete sc;
+
 	return 0;
+}
+
+// starts reading queue by game controller in a separate thread
+void readControllerQueue(GameController* gc)
+{
+	gc->readQueue();
+	boost::this_thread::yield();
+}
+
+// initializes shared memory
+bool ServerConsole::initSharedMemory()
+{
+	shared_memory_object::remove(SHARED_MEMORY_FILE);
+
+	try {
+		// opens shared memory file or creates if it not exists
+		shared_memory_object shm(create_only, SHARED_MEMORY_FILE, read_write);
+		// allocate memory by size of shared buffer
+		shm.truncate(sizeof(shared_memory_buffer));
+		// map the allocated region
+		mapped_region region(shm, read_write);
+	} catch(interprocess_exception &ex) {
+		shared_memory_object::remove(SHARED_MEMORY_FILE);
+		MessageBoxA(NULL, ex.what(), "Error!", MB_OK | MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
+		return false;
+	}
+
+	return true;
 }
 
 void ServerConsole::start()
 {
-	printf(" ::: ServerConsole started ::: \n");
+	printf(" ::: ServerConsole started ::: \n\n\n");
 
-	// test
-	GameController* gc = GameController::getInstance();
-	gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_PLAYER, GHVECTOR(1,1,1));
-	gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_PLAYER, GHVECTOR(1,100,1));
-	gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_PLAYER, GHVECTOR(100,1,1));
-	gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_PLAYER, GHVECTOR(1,1,100));
-	//
-
-	std::string msg;
-	std::getline(std::cin, msg);
-	while(msg != "exit")
+	if(!initSharedMemory())
 	{
-		GameObject* go = gc->findObject(3);
-		uint32 ii = gc->getSize();
-		if(go)
-		{
-			GHVECTOR pos = go->getPosition();
-			printf("x: %.2f, y: %.2f, z: %.2f\n", pos.x, pos.y, pos.z);
-		}
-		std::getline(std::cin, msg);
+		printf("ERROR: cannot allocate shared memory. Exit from console.\n");
+		return;
 	}
 
+	// start reading packets queues in separate threads
+	GameController* gc = GameController::getInstance();
+	boost::thread m_threadGameController = boost::thread(&readControllerQueue, gc);
+
+	// read console input
+	std::string msg;
+	while(std::getline(std::cin, msg))
+	{
+		if(msg == "exit")
+			break;
+	}
+
+	// stop all threads
+	m_threadGameController.interrupt();
+
+	// free resources
 	gc->free();
+
+	// free shared memory
+	shared_memory_object::remove(SHARED_MEMORY_FILE);
 
 	printf(" ::: ServerConsole stopped ::: \n");
 }

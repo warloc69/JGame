@@ -19,26 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Accessor.h" />
-    <ClInclude Include="baseTypes.h" />
-    <ClInclude Include="Exception.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="JavaPacketHandler.h" />
-    <ClInclude Include="Packet.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="PacketHandler.h" />
-    <ClInclude Include="Packets.h" />
+    <ClInclude Include="StackTracer.h" />
     <ClInclude Include="Vectors.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Exception.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="JavaPacketHandler.cpp" />
-    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="StackTracer.cpp" />
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -48,7 +40,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -91,7 +83,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files (x86)\Java\jdk1.8.0_25\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_25\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -110,12 +102,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GAMECONTROLLER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>F:\Install\Programming\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>F:\Install\Programming\boost_1_57_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -1,0 +1,30 @@
+
+#include "JavaPacketHandler.h"
+#include "Shared.h"
+
+// converts pointer to array to vector
+template <typename T>
+std::vector<T> ARRAY_TO_VECTOR(T* v, size_t N)
+{
+	std::vector<T> result;
+	for(size_t i = 0; i < N; i++)
+		result.push_back(v[i]);
+	return result;
+};
+
+JNIEXPORT void JNICALL Java_org_jgame_server_core_EntryPoint_sendMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray arr)
+{
+	// convert incoming java array to byte vector
+    int len = pJniEnv->GetArrayLength(arr);
+    uint8* buf = new uint8[len];
+    pJniEnv->GetByteArrayRegion(arr, 0, len, reinterpret_cast<jbyte*>(buf));
+	std::vector<uint8> dataVector = ARRAY_TO_VECTOR(buf, len);
+
+	// make a packet
+	Packet p;
+	p << dataVector;
+
+	// send packet to queue
+	addPacketToEngineQueue(p);
+}
+

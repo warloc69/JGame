@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class EntryPoint
 {
     static {
-        System.loadLibrary("GameController");
+        System.loadLibrary("Integration");
     }
 
     public static void main(String[] args) throws IOException
@@ -44,11 +44,10 @@ public class EntryPoint
         bb.putFloat(rotY);
         bb.putFloat(rotZ);
 
-        sendMessageToEngine(bb.array());
-        while(true)
-        {
+        //while(System.in.read() != -1) {
+            sendMessageToEngine(bb.array());
+        //}
 
-        }
     }
 
     public static native void sendMessageToEngine(byte[] data);

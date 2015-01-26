@@ -1,126 +1,87 @@
 
 #include "GameController.h"
 #include "Macro.h"
-
 #include "PacketHandler.h"
-#include "Packets.h"
+#include "..\Integration\Packets.h"
+#include "..\Integration\Shared.h"
 
+#include <assert.h>
+#include <Windows.h>
 
-GameController* GameController::pGameController = NULL;
-Accessor<uint32,GameObject>* GameController::pGameObjects = NULL;
-int GameController::m_counter = 0;
+// global singleton instance of GameController
+static GameController* pGameController = GameController::getInstance();
+
+GameController::GameController() 
+{
+	m_read_pos = 0;
+	m_read_controller = true;
+}
 
 GameController* const GameController::getInstance()
 {
-	if(!m_counter)
-	{
+	if(!pGameController)
 		pGameController = new GameController();
-		pGameObjects = new Accessor<uint32,GameObject>();
-	}
 
-	m_counter++;
 	return pGameController;
 }
 
 void GameController::free()
 {
-	m_counter--;
+	stopQueue();
 
-	if(!m_counter)
-	{
-		SAFE_DELETE_P(pGameObjects);
-
-		delete this;
-		pGameController = NULL;
-	}
+	SAFE_DELETE_HASH_MAP_V(m_gameObjects);
+	SAFE_DELETE_P(pGameController);
 }
 
+// Spawns an object of (GameObjectMasks) type at (v) position
 void GameController::spawnGameObject(GameObjectMasks type, GHVECTOR v)
 {
 	GameObject* go = new GameObject(type);
 	go->move(v);
-	pGameObjects->add(go);
+	add(go);
 
 	Packet p = PacketHandler::spawnGameObject(go);
-
-	uint8 id;
-	uint16 gType;
-	float px;
-	float py;
-	float pz;
-
-	p >> id >> gType >> px >> py >> pz;
-
-	Logger::debug(L"Packet send :: " + toWString(id) + L"," + toWString(gType) + L"," + toWString(px) + L"," + toWString(py) + L"," + toWString(pz));
-
-	/**
-		TODO: send packet to Java server here
-	*/
-
-	// p >> opcodeID >> objectID >> posX >> posY >> posZ >> rotX >> rotY >> rotZ;
-	//          2          4          4       4       4       4       4       4
-
-	/*uint8* data = new uint8[8];
-    data[0] = 0x00;
-    data[1] = 0x03;
-    data[2] = 0x50;
-    data[3] = 0x53;
-    data[4] = 0x54;
-    data[5] = 0x55;
-    data[6] = 0x56;
-    data[7] = 0x57;
-
-	std::vector<uint8> vv = ARRAY_TO_VECTOR(data, 10);
-
-	p = Packet(10);
-	p << vv;
-	p.resetRead();
-
-
-	uint16 opcodeID;
-	p >> opcodeID;
-
-	Logger::debug(L"opcodeID="+toWString(opcodeID), true);
-
-	switch(opcodeID)
-	{
-		case PACKET_MOVE_GAME_OBJECT:
-			PacketHandler::handleMoveAndRotatePacket(p);
-			break;
-
-		default:
-			break;
-	}*/
-
-
-
-	//Java_org_jgame_server_core_SimpleServer_sendPacket(
-}
-
-void GameController::moveObject(uint32 objectID, GHVECTOR v)
-{
-	GameObject* go = pGameObjects->getValue(objectID);
-	if(!go)
-		return;
-	go->move(v);
-}
-
-void GameController::rotateObject(uint32 objectID, GHVECTOR v)
-{
-	GameObject* go = pGameObjects->getValue(objectID);
-	if(!go)
-		return;
-	go->rotate(v);
+	// TODO: send packet back to Java server
 }
 
 GameObject* GameController::findObject(uint32 id)
 {
-	return pGameObjects->getValue(id);
+	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.begin();
+	for(; itr != m_gameObjects.end(); itr++)
+	{
+		if(itr->first == id)
+			return itr->second;
+	}
+
+	return NULL;
 }
 
-int GameController::getSize()
+// auto-generate internal id for object
+uint32 GameController::generateKey()
 {
-	return pGameObjects->getMap().size();
+	uint32 i = 1;
+
+	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.begin();
+	for(; itr != m_gameObjects.end(); itr++)
+	{
+		if(itr->first == i)
+		{
+			i++;
+			continue;
+		}
+		break;
+	}
+
+	return i;
+}
+
+void GameController::add(GameObject* o)
+{
+	assert(o);
+
+	uint32 id = generateKey();
+	o->setID(id);
+	m_gameObjects.insert(std::pair<uint32,GameObject*>(id, o));
 }
 
 /*JNIEnv* createJVM(JavaVM** jvm) 
@@ -140,3 +101,38 @@ int GameController::getSize()
         printf("\nUnable to Launch JVM\n");       
     return env;
 }*/
+
+// method works in a separate thread
+bool GameController::readQueue()
+{
+	try {
+		// open shared memory
+		shared_memory_object shm(open_only, SHARED_MEMORY_FILE, read_write);
+		// map region
+		mapped_region region(shm, read_write);
+		// get region address
+		void* addr = region.get_address();
+		// cast memory to buffer
+		shared_memory_buffer* data = static_cast<shared_memory_buffer*>(addr);
+
+		// read loop
+		while(m_read_controller)
+		{
+			Packet p;
+			if(!data->queue.pop(p))
+				continue;
+
+			PacketHandler::handle(p);
+		}
+	} catch(interprocess_exception &ex) {
+		MessageBoxA(NULL, ex.what(), "Error!", MB_OK | MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
+		return false;
+	}
+
+	return true;
+}
+
+void GameController::stopQueue()
+{
+	m_read_controller = false;
+}

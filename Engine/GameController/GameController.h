@@ -2,7 +2,7 @@
 #pragma once
 
 #include "GameObject.h"
-#include "Accessor.h"
+#include <hash_map>
 
 class GameController
 {
@@ -10,20 +10,25 @@ class GameController
 		DLL_EXPORT static GameController* const getInstance();
 		DLL_EXPORT void free();
 
-		DLL_EXPORT void spawnGameObject(GameObjectMasks type, GHVECTOR v);
-		DLL_EXPORT void moveObject(uint32 objectID, GHVECTOR v);
-		DLL_EXPORT void rotateObject(uint32 objectID, GHVECTOR v);
+		void spawnGameObject(GameObjectMasks type, GHVECTOR v);
+		//void moveObject(uint32 objectID, GHVECTOR v);
+		//void rotateObject(uint32 objectID, GHVECTOR v);
 
-		DLL_EXPORT GameObject* findObject(uint32 id);
+		DLL_EXPORT bool readQueue();
+		DLL_EXPORT void stopQueue();
 
-		DLL_EXPORT int getSize();
+		GameObject* findObject(uint32 id);
 
 	protected:
-		GameController() {}
+		GameController();
 		virtual ~GameController() {}
 
 	private:
-		static Accessor<uint32,GameObject>* pGameObjects;
-		static GameController* pGameController;
-		static int m_counter;
+		uint32 m_read_pos;
+		bool m_read_controller;
+
+		void add(GameObject* go);
+		uint32 generateKey();
+
+		std::hash_map<uint32,GameObject*> m_gameObjects;
 };

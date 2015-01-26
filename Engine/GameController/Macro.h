@@ -33,15 +33,6 @@ std::string toString(const T& t)
 	return oss.str();
 };
 
-template <typename T>
-std::vector<T> ARRAY_TO_VECTOR(T* v, size_t N)
-{
-	std::vector<T> result;
-	for(size_t i = 0; i < N; i++)
-		result.push_back(v[i]);
-	return result;
-};
-
 template <class T>
 void SAFE_DELETE_P_VECTOR(std::vector<T*> *vec)
 {
@@ -73,12 +64,12 @@ void SAFE_RELEASE_P_VECTOR(std::vector<T*> *vec)
 };
 
 template <typename K, class V>
-void SAFE_DELETE_HASH_MAP_V(std::hash_map<K,V*> *map)
+void SAFE_DELETE_HASH_MAP_V(std::hash_map<K,V*> map)
 {
-	std::hash_map<K,V*>::iterator i = map->begin();
-	for(; i != map->end(); i++)
+	std::hash_map<K,V*>::iterator i = map.begin();
+	for(; i != map.end(); i++)
 		SAFE_DELETE_P(i->second);
-	map->clear();
+	map.clear();
 };
 
 template <typename K, class V>
@@ -100,3 +91,4 @@ void SAFE_RELEASE_HASH_MAP_K(std::hash_map<K*,V> *map)
 	for(; i != map->end(); i++)
 		SAFE_RELEASE(i->first);
 };
+

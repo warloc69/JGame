@@ -22,9 +22,6 @@
     <Filter Include="Файлы исходного кода\Common">
       <UniqueIdentifier>{6b3eb7c8-1179-42ec-8606-afe680c3fb4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\Java">
-      <UniqueIdentifier>{9761569d-95ee-41f5-ad14-cef98d23f479}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameController.h">
@@ -36,32 +33,14 @@
     <ClInclude Include="Vectors.h">
       <Filter>Файлы исходного кода\Math</Filter>
     </ClInclude>
-    <ClInclude Include="baseTypes.h">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Accessor.h">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Macro.h">
       <Filter>Файлы исходного кода\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Packets.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
-    <ClInclude Include="Exception.h">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="JavaPacketHandler.h">
-      <Filter>Файлы исходного кода\Java</Filter>
-    </ClInclude>
     <ClInclude Include="PacketHandler.h">
       <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="StackTracer.h">
+      <Filter>Файлы исходного кода\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,17 +53,11 @@
     <ClCompile Include="GameController.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Exception.cpp">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Файлы исходного кода\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="JavaPacketHandler.cpp">
-      <Filter>Файлы исходного кода\Java</Filter>
-    </ClCompile>
     <ClCompile Include="PacketHandler.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="StackTracer.cpp">
+      <Filter>Файлы исходного кода\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

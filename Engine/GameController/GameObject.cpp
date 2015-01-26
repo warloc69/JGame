@@ -1,6 +1,5 @@
 
 #include "GameObject.h"
-#include "Accessor.h"
 
 GameObject::GameObject(GameObjectMasks type)
 {
@@ -58,28 +57,3 @@ void GameObject::rotate(GHVECTOR v)
 	m_rotation = v;
 }
 
-uint32 Accessor<uint32,GameObject>::generateKey()
-{
-	uint32 i = 1;
-	std::hash_map<K,C*>::iterator itr = m_values.begin();
-	for(; itr != m_values.end(); itr++)
-	{
-		if(itr->first == i)
-		{
-			i++;
-			continue;
-		}
-	}
-
-	return i;
-}
-
-void Accessor<uint32,GameObject>::add(GameObject* o)
-{
-	if(o)
-	{
-		uint32 id = generateKey();
-		o->setID(id);
-		m_values.insert(std::pair<uint32,GameObject*>(id, o));
-	}
-}

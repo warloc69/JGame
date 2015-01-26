@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "baseTypes.h"
+#include "..\Integration\baseTypes.h"
 #include <math.h>
 
 struct GHVECTOR
