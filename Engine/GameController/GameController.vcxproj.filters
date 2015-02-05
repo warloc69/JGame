@@ -22,6 +22,9 @@
     <Filter Include="Файлы исходного кода\Common">
       <UniqueIdentifier>{6b3eb7c8-1179-42ec-8606-afe680c3fb4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Stages">
+      <UniqueIdentifier>{28fe8b6a-c7aa-4382-b2d9-4b45b2a54c80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameController.h">

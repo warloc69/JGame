@@ -33,9 +33,16 @@ int _tmain(int argc, _TCHAR* argv[])
 }
 
 // starts reading queue by game controller in a separate thread
-void readControllerQueue(GameController* gc)
+void readMovementQueue(GameController* gc)
 {
-	gc->readQueue();
+	gc->readQueue(QueueTypes::IN_QUEUE_MOVEMENT);
+	boost::this_thread::yield();
+}
+
+// starts reading queue by game controller in a separate thread
+void readCollisionQueue(GameController* gc)
+{
+	gc->readQueue(QueueTypes::IN_QUEUE_COLLISION);
 	boost::this_thread::yield();
 }
 
@@ -72,7 +79,8 @@ void ServerConsole::start()
 
 	// start reading packets queues in separate threads
 	GameController* gc = GameController::getInstance();
-	boost::thread m_threadGameController = boost::thread(&readControllerQueue, gc);
+	boost::thread m_threadMovementQueue = boost::thread(&readMovementQueue, gc);
+	boost::thread m_threadCollisionQueue = boost::thread(&readCollisionQueue, gc);
 
 	// read console input
 	std::string msg;
@@ -83,7 +91,8 @@ void ServerConsole::start()
 	}
 
 	// stop all threads
-	m_threadGameController.interrupt();
+	m_threadMovementQueue.interrupt();
+	m_threadCollisionQueue.interrupt();
 
 	// free resources
 	gc->free();

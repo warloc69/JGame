@@ -3,6 +3,13 @@
 
 #include "GameObject.h"
 #include <hash_map>
+#include <iostream>
+#include <boost\thread\thread.hpp>
+
+#include "PacketHandler.h"
+
+#include "..\Integration\Packets.h"
+#include "..\Integration\Shared.h"
 
 class GameController
 {
@@ -11,11 +18,9 @@ class GameController
 		DLL_EXPORT void free();
 
 		void spawnGameObject(GameObjectMasks type, GHVECTOR v);
-		//void moveObject(uint32 objectID, GHVECTOR v);
-		//void rotateObject(uint32 objectID, GHVECTOR v);
 
-		DLL_EXPORT bool readQueue();
-		DLL_EXPORT void stopQueue();
+		DLL_EXPORT bool readQueue(QueueTypes type);
+		DLL_EXPORT void stopQueues();
 
 		GameObject* findObject(uint32 id);
 
@@ -23,9 +28,10 @@ class GameController
 		GameController();
 		virtual ~GameController() {}
 
+		void sendPacketToJavaServer(Packet p);
+		
 	private:
-		uint32 m_read_pos;
-		bool m_read_controller;
+		bool m_read_queues;
 
 		void add(GameObject* go);
 		uint32 generateKey();

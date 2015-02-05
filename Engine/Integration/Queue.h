@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
+#include <boost/thread.hpp>
 using namespace boost;
 
 //!Custom queue with fixed size [N]
@@ -21,37 +20,46 @@ template <typename T, size_t N> struct Queue
 		}
 
 		//!Adds element (T v) into queue. Returns false in case when queue is full.
-		bool push(T v)
+		void push(T v)
 		{
-			lock_guard<mutex> lock(m_mutex);
+			m_mutex.lock();
 
 			if(m_size == N)
-				return false;
+			{
+				m_mutex.unlock();
+				return;
+			}
 
 			m_list[m_writer] = v;
 			m_writer = m_writer == N - 1 ? 0 : m_writer + 1;
 			m_size++;
 
-			return true;
+			m_mutex.unlock();
 		}
 
 		//!Reads element (T& v) from queue. Return false in case of empty queue.
 		bool pop(T& v)
 		{
-			lock_guard<mutex> lock(m_mutex);
+			m_mutex.lock();
 
 			if(!m_size)
+			{
+				m_mutex.unlock();
 				return false;
+			}
 
 			v = m_list[m_reader];
 			m_reader = m_reader == N - 1 ? 0 : m_reader + 1;
 			m_size--;
+
+			m_mutex.unlock();
 
 			return true;
 		}
 
 	private:
 		mutex m_mutex;
+
 		T m_list[N];
 		int m_reader;
 		int m_writer;

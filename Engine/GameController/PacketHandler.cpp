@@ -21,7 +21,7 @@ void PacketHandler::handle(Packet p)
 			break;
 
 		default:
-			printf("WARNING :: unhandled packet");
+			printf("WARNING :: unhandled packet\n");
 			break;
 	}
 }
@@ -60,13 +60,15 @@ void PacketHandler::handleMoveAndRotatePacket(Packet p)
 Packet PacketHandler::spawnGameObject(GameObject* go)
 {
 	//	Packet format:
-	//		id		- type		- position		- rotation
-	//		uint16	- uint16	- 3 x float		- 3 x float
-	//  Total = 12 bytes
+	//		id		- objectID	- type		- position		- rotation
+	//		uint16	- uint32	- uint16	- 3 x float		- 3 x float
+	//  Total = 32 bytes
 
 	Packet p;
 	
 	p << (uint16) PACKET_SPAWN_GAME_OBJECT;
+
+	p << go->getID();
 	
 	p << go->getType();
 	
@@ -77,6 +79,8 @@ Packet PacketHandler::spawnGameObject(GameObject* go)
 	p << go->getRotation().x;
 	p << go->getRotation().y;
 	p << go->getRotation().z;
+
+	p.finalize();
 
 	return p;
 }

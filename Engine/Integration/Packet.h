@@ -6,6 +6,17 @@
 
 #include <assert.h>
 
+template <typename T>
+T SWAP_BYTES(T v) 
+{
+	T retVal;
+	char *pVal = (char*)&v;
+	char *pRetVal = (char*)&retVal;
+	int size = sizeof(T);
+	for(int i = 0; i < size; i++)
+		pRetVal[size-1-i] = pVal[i];
+	return retVal;
+}
 
 //TODO: find a way for use dynamic memory allocation in order to use in queue
 class Packet
@@ -17,6 +28,7 @@ class Packet
 		{
 			m_read_pos = 0;
 			m_write_pos = 0;
+			m_finalized = false;
 			memset(&m_buffer[0], 0, sizeof(m_buffer));
 		}
 
@@ -81,32 +93,34 @@ class Packet
 			m_read_pos = 0;
 		}
 
-		void resetWrite()
+		uint8* getBuffer()
 		{
-			m_write_pos = 0;
+			return m_buffer;
+		}
+
+		void finalize()
+		{
+			m_finalized = true;
+		}
+
+		uint8 size()
+		{
+			return m_finalized ? m_write_pos : PACKET_SIZE;
 		}
 
 	protected:
 		uint8 m_buffer[PACKET_SIZE];
-		uint32 m_read_pos;
-		uint32 m_write_pos;
+		uint8 m_read_pos;
+		uint8 m_write_pos;
+		bool m_finalized;
 
 	private:
 		template <typename T>
-		T swapBytes(T v) 
-		{
-			T retVal;
-			char *pVal = (char*)&v;
-			char *pRetVal = (char*)&retVal;
-			int size = sizeof(T);
-			for(int i = 0; i < size; i++)
-				pRetVal[size-1-i] = pVal[i];
-			return retVal;
-		}
-		
-		template <typename T>
 		void append(const T v)
 		{
+			if(m_finalized)
+				return;
+
 			assert(m_write_pos + sizeof(T) <= PACKET_SIZE);
 
 			memcpy(&m_buffer[m_write_pos],&v,sizeof(T));
@@ -121,6 +135,6 @@ class Packet
 			T v;
 			memcpy(&v,&m_buffer[m_read_pos],sizeof(T));
 			m_read_pos += sizeof(T);
-			return swapBytes(v);
+			return SWAP_BYTES(v);
 		}
 };

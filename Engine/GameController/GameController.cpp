@@ -1,9 +1,6 @@
 
 #include "GameController.h"
 #include "Macro.h"
-#include "PacketHandler.h"
-#include "..\Integration\Packets.h"
-#include "..\Integration\Shared.h"
 
 #include <assert.h>
 #include <Windows.h>
@@ -13,8 +10,7 @@ static GameController* pGameController = GameController::getInstance();
 
 GameController::GameController() 
 {
-	m_read_pos = 0;
-	m_read_controller = true;
+	m_read_queues = true;
 }
 
 GameController* const GameController::getInstance()
@@ -27,7 +23,7 @@ GameController* const GameController::getInstance()
 
 void GameController::free()
 {
-	stopQueue();
+	stopQueues();
 
 	SAFE_DELETE_HASH_MAP_V(m_gameObjects);
 	SAFE_DELETE_P(pGameController);
@@ -41,17 +37,14 @@ void GameController::spawnGameObject(GameObjectMasks type, GHVECTOR v)
 	add(go);
 
 	Packet p = PacketHandler::spawnGameObject(go);
-	// TODO: send packet back to Java server
+	sendPacketToJavaServer(p);
 }
 
 GameObject* GameController::findObject(uint32 id)
 {
-	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.begin();
-	for(; itr != m_gameObjects.end(); itr++)
-	{
-		if(itr->first == id)
-			return itr->second;
-	}
+	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.find(id);
+	if(itr != m_gameObjects.end())
+		return itr->second;
 
 	return NULL;
 }
@@ -61,15 +54,12 @@ uint32 GameController::generateKey()
 {
 	uint32 i = 1;
 
-	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.begin();
-	for(; itr != m_gameObjects.end(); itr++)
+	// todo: temp
+	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.find(i);
+	while(itr != m_gameObjects.end())
 	{
-		if(itr->first == i)
-		{
-			i++;
-			continue;
-		}
-		break;
+		i++;
+		itr = m_gameObjects.find(i);
 	}
 
 	return i;
@@ -84,26 +74,8 @@ void GameController::add(GameObject* o)
 	m_gameObjects.insert(std::pair<uint32,GameObject*>(id, o));
 }
 
-/*JNIEnv* createJVM(JavaVM** jvm) 
-{
-    JNIEnv *env;
-    JavaVMInitArgs vm_args;
-
-    JavaVMOption options; 
-    options.optionString = "-Djava.class.path=E:\\_Programming\\_Z&B\\_TW\\JGame\\Server\\src"; 
-    vm_args.version = JNI_VERSION_1_8;
-    vm_args.nOptions = 1;
-    vm_args.options = &options;
-    vm_args.ignoreUnrecognized = 0;
-    
-    int ret = JNI_CreateJavaVM(jvm, (void**)&env, &vm_args);
-    if(ret < 0)
-        printf("\nUnable to Launch JVM\n");       
-    return env;
-}*/
-
 // method works in a separate thread
-bool GameController::readQueue()
+bool GameController::readQueue(QueueTypes type)
 {
 	try {
 		// open shared memory
@@ -116,11 +88,24 @@ bool GameController::readQueue()
 		shared_memory_buffer* data = static_cast<shared_memory_buffer*>(addr);
 
 		// read loop
-		while(m_read_controller)
+		while(m_read_queues)
 		{
 			Packet p;
-			if(!data->queue.pop(p))
+			bool received = false;
+
+			// queue is already threadsafe
+			if(type == IN_QUEUE_MOVEMENT)
+				received = data->inMovementQueue.pop(p);
+			else if(type == IN_QUEUE_COLLISION)
+				received = data->inCollisionQueue.pop(p);
+			else if(type == OUT_QUEUE)
+				received = data->outQueue.pop(p);
+
+			if(!received)
+			{
+				boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 				continue;
+			}
 
 			PacketHandler::handle(p);
 		}
@@ -132,7 +117,28 @@ bool GameController::readQueue()
 	return true;
 }
 
-void GameController::stopQueue()
+// sends packet to java server
+void GameController::sendPacketToJavaServer(Packet out)
 {
-	m_read_controller = false;
+	try {
+		// open shared memory
+		shared_memory_object shm(open_only, SHARED_MEMORY_FILE, read_write);
+		// map region
+		mapped_region region(shm, read_write);
+		// get region address
+		void* addr = region.get_address();
+		// cast memory to buffer
+		shared_memory_buffer* data = static_cast<shared_memory_buffer*>(addr);
+		// queue is already threadsafe
+		data->outQueue.push(out);
+	} catch(interprocess_exception &ex) {
+		MessageBoxA(NULL, ex.what(), "Error!", MB_OK | MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
+		return;
+	}
 }
+
+void GameController::stopQueues()
+{
+	m_read_queues = false;
+}
+
