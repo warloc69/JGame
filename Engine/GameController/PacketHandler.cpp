@@ -31,46 +31,63 @@ void PacketHandler::handleMoveAndRotatePacket(Packet p)
 	printf("PacketHandler::handleMoveAndRotatePacket start\n");
 
 	// parse packet
-	uint32 objectID;
+	uint32 clientID, objectID;
 	float posX, posY, posZ, rotX, rotY, rotZ;
-	p >> objectID >> posX >> posY >> posZ >> rotX >> rotY >> rotZ;
+	p >> clientID >> objectID >> posX >> posY >> posZ >> rotX >> rotY >> rotZ;
 
-	assert(objectID);
+	assert(clientID);
 
-	printf("objectID=%d \nposX=%.2f \nposY=%.2f \nposZ=%.2f \nrotX=%.2f \nrotY=%.2f \nrotZ=%.2f \n"
-		, objectID, posX, posY, posZ, rotX, rotY, rotZ);
+	printf("clientID=%d \nobjectID=%d \nposX=%.2f \nposY=%.2f \nposZ=%.2f \nrotX=%.2f \nrotY=%.2f \nrotZ=%.2f \n"
+		, clientID, objectID, posX, posY, posZ, rotX, rotY, rotZ);
 
 	// move object
 	GameController* gc = GameController::getInstance();
-	GameObject* go = gc->findObject(objectID);
+	GameObject* go = gc->findObjectByClient(clientID);
 	//assert(go);
 	if(go)
 	{
+		// validation
+		if(go->getID() != objectID)
+		{
+			printf("WARNING! Client's object id is not equal to engine's");
+		}
+
 		go->move(GHVECTOR(posX, posY, posZ));
 		go->rotate(GHVECTOR(rotX, rotY, rotZ));
 	}
 	else
 	{
-		printf("WARNING! Object with %d ID was not found.\n", objectID);
+		GameObject* go = gc->findObject(objectID);
+		if(!go)
+		{
+			printf("WARNING! Object with %d ID was not found.\n", objectID);
+		}
+		else
+		{
+			go->move(GHVECTOR(posX, posY, posZ));
+			go->rotate(GHVECTOR(rotX, rotY, rotZ));
+		}
 	}
 
 	printf("PacketHandler::handleMoveAndRotatePacket end\n");
 }
 
-Packet PacketHandler::spawnGameObject(GameObject* go)
+Packet PacketHandler::spawnGameObject(uint32 clientID, GameObject* go)
 {
 	//	Packet format:
-	//		id		- objectID	- type		- position		- rotation
-	//		uint16	- uint32	- uint16	- 3 x float		- 3 x float
-	//  Total = 32 bytes
+	//		id		- clientID	- objectID	- type		- position		- rotation
+	//		uint16	- uint32	- uint32	- uint16	- 3 x float		- 3 x float
+	//  Total = 36 bytes
 
 	Packet p;
 	
-	p << (uint16) PACKET_SPAWN_GAME_OBJECT;
+	p << (uint16) PACKET_SPAWN_GAME_OBJECT; // id
 
-	p << go->getID();
+	p << clientID; // client id
+
+	p << go->getID(); // object id
 	
-	p << go->getType();
+	p << go->getType(); // spawn object type
 	
 	p << go->getPosition().x;
 	p << go->getPosition().y;

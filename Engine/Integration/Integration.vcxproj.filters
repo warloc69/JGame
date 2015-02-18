@@ -41,5 +41,8 @@
     <ClInclude Include="Queue.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="baseTypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,7 +19,9 @@ class GameObject
 		~GameObject();
 
 		DLL_EXPORT uint32 getID();
+		DLL_EXPORT uint32 getClientID();
 		void setID(uint32 id);
+		void setClientID(uint32 id);
 		DLL_EXPORT uint16 getType();
 		DLL_EXPORT uint64 getGUID();
 
@@ -31,6 +33,7 @@ class GameObject
 
 	private:
 		uint64 m_guid;
+		uint32 m_client_id;
 		void setType(uint16 type);
 
 		GHVECTOR m_position;

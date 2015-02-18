@@ -23,6 +23,7 @@ class GameController
 		DLL_EXPORT void stopQueues();
 
 		GameObject* findObject(uint32 id);
+		GameObject* findObjectByClient(uint32 clientID);
 
 	protected:
 		GameController();

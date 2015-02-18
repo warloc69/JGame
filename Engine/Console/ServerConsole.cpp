@@ -88,6 +88,10 @@ void ServerConsole::start()
 	{
 		if(msg == "exit")
 			break;
+		if(msg == "spawn")
+		{
+			gc->spawnGameObject(GameObjectMasks::OBJ_TYPE_MASK_CREATURE, GHVECTOR(10,50,10));
+		}
 	}
 
 	// stop all threads

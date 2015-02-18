@@ -36,7 +36,10 @@ void GameController::spawnGameObject(GameObjectMasks type, GHVECTOR v)
 	go->move(v);
 	add(go);
 
-	Packet p = PacketHandler::spawnGameObject(go);
+	// TODO: define which clients should receive spawn object information
+	uint32 clientID = 0;
+
+	Packet p = PacketHandler::spawnGameObject(clientID, go);
 	sendPacketToJavaServer(p);
 }
 
@@ -45,6 +48,19 @@ GameObject* GameController::findObject(uint32 id)
 	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.find(id);
 	if(itr != m_gameObjects.end())
 		return itr->second;
+
+	return NULL;
+}
+
+GameObject* GameController::findObjectByClient(uint32 clientID)
+{
+	std::hash_map<uint32,GameObject*>::iterator itr = m_gameObjects.begin();
+	while(itr != m_gameObjects.end())
+	{
+		if(itr->second->getClientID() == clientID)
+			return itr->second;
+		itr++;
+	}
 
 	return NULL;
 }

@@ -115,6 +115,17 @@ class Packet
 		bool m_finalized;
 
 	private:
+		bool isLittleEndian()
+		{
+			union 
+			{ 
+				uint32 v;
+				unsigned char c[4];
+			} u;
+			u.v = 0x01;
+			return 0x01 != u.c[3];
+		}
+
 		template <typename T>
 		void append(const T v)
 		{
@@ -135,6 +146,8 @@ class Packet
 			T v;
 			memcpy(&v,&m_buffer[m_read_pos],sizeof(T));
 			m_read_pos += sizeof(T);
+			if(isLittleEndian())
+				return v;
 			return SWAP_BYTES(v);
 		}
 };

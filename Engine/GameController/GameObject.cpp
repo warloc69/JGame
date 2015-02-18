@@ -27,9 +27,19 @@ uint32 GameObject::getID()
 	return (uint32) m_guid >> 16;
 }
 
+uint32 GameObject::getClientID()
+{
+	return m_client_id;
+}
+
 void GameObject::setID(uint32 id)
 {
 	m_guid = m_guid | (id << 16);
+}
+
+void GameObject::setClientID(uint32 id)
+{
+	m_client_id = id;
 }
 
 uint64 GameObject::getGUID()
