@@ -25,22 +25,27 @@ void GameController::free()
 {
 	stopQueues();
 
+	SAFE_DELETE_HASH_MAP_V(m_dynamicObjects);
 	SAFE_DELETE_HASH_MAP_V(m_gameObjects);
 	SAFE_DELETE_P(pGameController);
 }
 
-// Spawns an object of (GameObjectMasks) type at (v) position
-void GameController::spawnGameObject(GameObjectMasks type, GHVECTOR v)
+// Spawns an object with model from resource at (v) position
+GameObject* GameController::spawnGameObject(uint16 resourceID, GHVECTOR v)
 {
-	GameObject* go = new GameObject(type);
+	GameObject* go = new GameObject(resourceID);
 	go->move(v);
 	add(go);
+	return go;
+}
 
-	// TODO: define which clients should receive spawn object information
-	uint32 clientID = 0;
-
-	Packet p = PacketHandler::spawnGameObject(clientID, go);
-	sendPacketToJavaServer(p);
+// Spawns dynamic object with model from resource at (v) position
+DynamicObject* GameController::spawnDynamicObject(uint16 resourceID, GHVECTOR v)
+{
+	DynamicObject* go = new DynamicObject(resourceID);
+	go->move(v);
+	addDynamic(go);
+	return go;
 }
 
 GameObject* GameController::findObject(uint32 id)
@@ -88,6 +93,30 @@ void GameController::add(GameObject* o)
 	uint32 id = generateKey();
 	o->setID(id);
 	m_gameObjects.insert(std::pair<uint32,GameObject*>(id, o));
+}
+
+uint32 GameController::generateDynamicKey()
+{
+	uint32 i = 1;
+
+	// todo: temp
+	std::hash_map<uint32,DynamicObject*>::iterator itr = m_dynamicObjects.find(i);
+	while(itr != m_dynamicObjects.end())
+	{
+		i++;
+		itr = m_dynamicObjects.find(i);
+	}
+
+	return i;
+}
+
+void GameController::addDynamic(DynamicObject* o)
+{
+	assert(o);
+
+	uint32 id = generateDynamicKey();
+	o->setID(id);
+	m_dynamicObjects.insert(std::pair<uint32,DynamicObject*>(id, o));
 }
 
 // method works in a separate thread
@@ -158,3 +187,10 @@ void GameController::stopQueues()
 	m_read_queues = false;
 }
 
+void GameController::update(float dt)
+{
+	m_mutex.lock();
+
+
+	m_mutex.unlock();
+}

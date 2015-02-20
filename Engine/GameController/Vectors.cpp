@@ -30,3 +30,9 @@ float GHVectorDot(GHVECTOR u, GHVECTOR v)
 	float dot = u.x * v.x + u.y * v.y + u.z * v.z;
 	return dot;
 }
+
+GHVECTOR4 GHVector4NormalizeW(GHVECTOR4 v)
+{
+	GHVECTOR temp = GHVectorNormalize(GHVECTOR(v.x,v.y,v.z));
+	return GHVECTOR4(temp.x, temp.y, temp.z, v.w);
+}

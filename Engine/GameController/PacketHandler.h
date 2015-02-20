@@ -11,10 +11,12 @@ class PacketHandler
 		static void handle(Packet p);
 
 		// builders
-		static Packet spawnGameObject(uint32 clientID, GameObject* go);
+		static Packet gameObjectSpawn(uint32 clientID, GameObject* go);
+		static Packet gameObjectMove(uint32 clientID, GameObject* go);
 
 	private:
 		// handlers
-		static void handleMoveAndRotatePacket(Packet p);
+		static void handleGameObjectMovePacket(Packet p);
+		static void handleGameObjectFirePacket(Packet p);
 };
 

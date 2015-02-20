@@ -4,6 +4,13 @@
 // packet protocol IDs
 enum Packets
 {
-	PACKET_MOVE_GAME_OBJECT		= 3,
-	PACKET_SPAWN_GAME_OBJECT	= 10,
+	CE_PKT_GO_MOVE			= 3,
+	CE_PKT_GO_FIRE			= 4,
+	C_PKT_GO_PARAM_UPDATE	= 5,
+	C_PKT_PLAYER_ACTION		= 6,
+
+
+
+	E_PKT_GO_SPAWN			= 10,
+	CE_PKT_GO_DESTROY		= 11,
 };

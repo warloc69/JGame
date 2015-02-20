@@ -6,28 +6,33 @@ public class PacketHandler : MonoBehaviour
 {
 	public static void handle(Packet pkt)
 	{
-		pkt.resetRead ();
+		pkt.resetRead();
+		pkt.read<byte>();//read size byte
 		short id = pkt.read<short>();
 
 		switch(id)
 		{
-			case (short)Packets.PACKET_MOVE_GAME_OBJECT:
-				handleMoveAndRotatePacket(pkt);
+			case (short)Packets.CE_PKT_GO_MOVE:
+				handleGameObjectMovePacket(pkt);
 				break;
 
-			case (short)Packets.PACKET_SPAWN_GAME_OBJECT:
-				handleSpawnObjectPacket(pkt);
+			case (short)Packets.E_PKT_GO_SPAWN:
+				handleGameObjectSpawnPacket(pkt);
+				break;
+
+			case (short)Packets.S_PKT_GEN_SESSION_KEY:
+				handleGenerateSessionKeyPacket(pkt);
 				break;
 
 			default:
-				Debug.Log ("Unknown packet");
+				Debug.Log ("Unknown packet id=" + id);
 				break;
 		}
 	}
 
-	private static void handleMoveAndRotatePacket(Packet p)
+	private static void handleGameObjectMovePacket(Packet p)
 	{
-		Debug.Log("PacketHandler::handleMoveAndRotatePacket start");
+		Debug.Log("PacketHandler::handleGameObjectMovePacket start");
 
 		// parse packet
 		int objectID = p.read<int>();
@@ -37,43 +42,57 @@ public class PacketHandler : MonoBehaviour
 		float rotX = p.read<float>();
 		float rotY = p.read<float>();
 		float rotZ = p.read<float>();
+		float rotW = p.read<float>();
 
 		Debug.Log ("objID=" + objectID + ",posX=" + posX + ",posY=" + posY + ",posZ=" + posZ + 
 		           ",rotX=" + rotX + ",rotY=" + rotY + ",rotZ=" + rotZ);
 
-		// TODO: search by object id
-		var gameObject = GameObject.Find("MainPlayer");
+		var gameObject = GameObject.Find(""+objectID);
 		gameObject.transform.position.Set(posX, posY, posZ);
-		gameObject.transform.rotation.Set(rotX, rotY, rotZ, 0);
+		gameObject.transform.rotation.Set(rotX, rotY, rotZ, rotW);
 
-		Debug.Log("PacketHandler::handleMoveAndRotatePacket end");
+		Debug.Log("PacketHandler::handleGameObjectMovePacket end");
 	}
 
-	private static void handleSpawnObjectPacket(Packet p)
+	private static void handleGameObjectSpawnPacket(Packet p)
 	{
-		Debug.Log("PacketHandler::handleSpawnObjectPacket start");
+		Debug.Log("PacketHandler::handleGameObjectSpawnPacket start");
 		
 		// parse packet
 		int objectID = p.read<int>();
-		short type = p.read<short>();
+		short resourceID = p.read<short>();
 		float posX = p.read<float>();
 		float posY = p.read<float>();
 		float posZ = p.read<float>();
 		float rotX = p.read<float>();
 		float rotY = p.read<float>();
 		float rotZ = p.read<float>();
+		float rotW = p.read<float>();
 
 		Debug.Log ("objID=" + objectID + ",posX=" + posX + ",posY=" + posY + ",posZ=" + posZ + 
 		           ",rotX=" + rotX + ",rotY=" + rotY + ",rotZ=" + rotZ);
-		
-		GameObject obj = (GameObject) Instantiate(Resources.Load ("Cubez", typeof(GameObject)));
-		obj.name = "C++ object_" + objectID;
+
+		// TODO: find prefab by resource id
+		GameObject obj = (GameObject) Instantiate(Resources.Load ("Player", typeof(GameObject)));
+		obj.name = "" + objectID;
 		obj.transform.position.Set(posX, posY, posZ);
-		obj.transform.rotation.Set(rotX, rotY, rotZ, 0);
+		obj.transform.rotation.Set(rotX, rotY, rotZ, rotW);
 
-		Packet answer = PacketBuilder.moveAndRotate(objectID, new Vector3(12,13,14), new Vector4(1,2,3,4));
-		JavaClient.sendPacket(answer);
+		Debug.Log("PacketHandler::handleGameObjectSpawnPacket end");
+	}
 
-		Debug.Log("PacketHandler::handleSpawnObjectPacket end");
+	private static void handleGenerateSessionKeyPacket(Packet p)
+	{
+		Debug.Log("PacketHandler::handleGenerateSessionKeyPacket start");
+		
+		// parse packet
+		byte[] sessionKey = p.read(20);
+		string key = BitConverter<string>.ConvertToGeneric (sessionKey);
+		
+		Debug.Log("sessionKey=" + key);
+		GameObject.Find ("Canvas").SetActive (false);
+		Player.isActive = true;
+
+		Debug.Log("PacketHandler::handleGenerateSessionKeyPacket end");
 	}
 }

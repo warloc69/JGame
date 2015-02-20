@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PacketBuilder
 {
-	public static Packet moveAndRotate(int objectID, Vector3 pos, Vector4 rot)
+	public static Packet gameObjectMove(int objectID, Vector3 pos, Vector4 rot)
 	{
 		Packet p = new Packet();
 
-		p.write<byte>(30);		// 1-packet size
-		p.write<short>((short)Packets.PACKET_MOVE_GAME_OBJECT);		// 2-packet id
+		p.write<byte>(32);		// 1-packet size
+		p.write<short>((short)Packets.CE_PKT_GO_MOVE);		// 2-packet id
 		p.write<int>(objectID);		// 4-object id
 		p.write<float>(pos.x);// 4-pos x
 		p.write<float>(pos.y);// 4-pos y
@@ -17,8 +17,51 @@ public class PacketBuilder
 		p.write<float>(rot.x);	// 4-rot x
 		p.write<float>(rot.y);	// 4-rot y
 		p.write<float>(rot.z);	// 4-rot z
+		p.write<float>(rot.w);	// 4-rot w
 		p.finalize();
 
+		return p;
+	}
+
+	public static Packet gameObjectFire(int objectID, short armsID, Vector3 direction)
+	{
+		Packet p = new Packet ();
+
+		p.write<byte> (18);
+		p.write<short>((short)Packets.CE_PKT_GO_FIRE);
+		p.write<int> (objectID);
+		p.write<short> (armsID);
+		p.write<float> (direction.x);
+		p.write<float> (direction.y);
+		p.write<float> (direction.z);
+		p.finalize ();
+
+		return p;
+	}
+
+	public static Packet authorizeUserPacket(string clientName, string password)
+	{
+		Packet p = new Packet ();
+
+		p.write<byte> (40);
+		p.write<short> ((short)Packets.C_PKT_AUTHORIZE_USER);
+		p.write(clientName, 20);
+		p.write(password, 20);
+		p.finalize ();
+
+		return p;
+	}
+
+	public static Packet registerUserPacket(string clientName, string password)
+	{
+		Packet p = new Packet ();
+		
+		p.write<byte> (40);
+		p.write<short> ((short)Packets.C_PKT_REGISTER_USER);
+		p.write(clientName, 20);
+		p.write(password, 20);
+		p.finalize ();
+		
 		return p;
 	}
 }

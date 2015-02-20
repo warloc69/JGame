@@ -1,30 +1,32 @@
 
 #include "GameObject.h"
 
-GameObject::GameObject(GameObjectMasks type)
+GameObject::GameObject(uint16 resourceID)
 {
 	m_guid = 0;
-	setType(type);
+	m_resource_id = resourceID;
 	m_position = GHVECTOR();
+	m_rotation = GHVECTOR4();
+	m_velocity = GHVECTOR4();
 }
 
 GameObject::~GameObject()
 {
 }
 
-uint16 GameObject::getType()
+uint16 GameObject::getResourceID()
 {
-	return (uint16) (m_guid & 0xFFFF);
+	return m_resource_id;
 }
 
-void GameObject::setType(uint16 type)
+void GameObject::setResourceID(uint16 resourceID)
 {
-	m_guid = m_guid | type;
+	m_resource_id = resourceID;
 }
 
 uint32 GameObject::getID()
 {
-	return (uint32) m_guid >> 16;
+	return m_guid;
 }
 
 uint32 GameObject::getClientID()
@@ -34,7 +36,7 @@ uint32 GameObject::getClientID()
 
 void GameObject::setID(uint32 id)
 {
-	m_guid = m_guid | (id << 16);
+	m_guid = id;
 }
 
 void GameObject::setClientID(uint32 id)
@@ -42,17 +44,12 @@ void GameObject::setClientID(uint32 id)
 	m_client_id = id;
 }
 
-uint64 GameObject::getGUID()
-{
-	return m_guid;
-}
-
 GHVECTOR GameObject::getPosition()
 {
 	return m_position;
 }
 
-GHVECTOR GameObject::getRotation()
+GHVECTOR4 GameObject::getRotation()
 {
 	return m_rotation;
 }
@@ -62,8 +59,17 @@ void GameObject::move(GHVECTOR v)
 	m_position = v;
 }
 
-void GameObject::rotate(GHVECTOR v)
+void GameObject::rotate(GHVECTOR4 v)
 {
 	m_rotation = v;
 }
 
+GHVECTOR4 GameObject::getVelocity()
+{
+	return m_velocity;
+}
+
+void GameObject::setVelocity(GHVECTOR4 v)
+{
+	m_velocity = v;
+}

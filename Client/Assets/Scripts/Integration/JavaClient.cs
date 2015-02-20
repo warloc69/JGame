@@ -6,101 +6,85 @@ using System.Net.Sockets;
 using System.Threading;
 
 using UnityEngine;
+using UnityEditor;
 
 public class JavaClient : MonoBehaviour 
 {
 	// TODO: read from properties
-	private static string host = "127.0.0.1";    
-	private static int port = 6669;
+	private static int readPort = 6669;
+	private static int sendPort = 6670;
+	private static string serverIPAddress = "127.0.0.1"; 
 
-	private static TcpClient client;
-	private static Thread thread;
-
+	private static UdpClient m_client;
+	private static Thread m_thread;
 	private static Queue m_queue;
+	private static bool m_active;
 
-	public static bool isConnected()
+	void Start () 
 	{
-		return client != null && client.Connected;
+		m_active = true;
+		m_queue = new Queue();
+		m_thread = new Thread(new ThreadStart(readPackets));
+		m_thread.IsBackground = true;
+		m_thread.Start();
 	}
 
-	private static void disconnect()
+	void Update () 
 	{
-		if(client != null)
-			client.Close ();
-		Debug.Log ("Disconnected from Java server");
-
-		if(thread != null)
-			thread.Interrupt();
+		Packet pkt = null;
+		while(m_queue != null && m_queue.pop (ref pkt))
+			PacketHandler.handle(pkt);
+	}
+	
+	void OnDestroy()
+	{
+		stop();
 	}
 
-	private static void readPacketsFromServer()
+	public static void stop()
 	{
-		NetworkStream stream = client.GetStream();
-		while(isConnected() && stream.CanRead)
+		m_active = false;
+
+		if(m_thread != null && m_thread.IsAlive)
+			m_thread.Interrupt();
+
+		if(m_client != null)
+			m_client.Close();
+	}
+
+	private static void readPackets()
+	{
+		m_client = new UdpClient(readPort);
+		m_client.Client.Blocking = true;
+
+		while(m_active)
 		{
-			int len = stream.ReadByte();
-			if(len == -1)
-				break;
-			if(len <= 0)
-				continue;
+			try {
+				IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+				byte[] arr = m_client.Receive(ref anyIP);
+				// validate 1st data size byte and last '\n' byte
+				if(arr[arr[0] + 3] != '\n')
+				{
+					Debug.LogWarning("Broken packet, incorrect EOF");
+					continue;
+				}
 
-			byte[] arr = new byte[len];
-			stream.Read(arr, 0, len);
-			if(stream.ReadByte() != '\n')
+				Packet pkt = new Packet(arr);
+				m_queue.push(pkt);
+			} 
+			catch(Exception e) 
 			{
-				Debug.LogError("Broken packet, incorrect EOF");
-				break;
+				Debug.LogError(e.Message);
 			}
-			
-			Packet pkt = new Packet(arr);
-			m_queue.push(pkt);
 		}
-
-		disconnect ();
 	}
 	
 	public static void sendPacket(Packet p)
 	{
-		if(!isConnected())
-			return;
-		
+		UdpClient server = new UdpClient();
+		IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(serverIPAddress), sendPort);
+
 		Logger.log ("Sending packet to Java server :: " + p.toString());
-		NetworkStream stream = client.GetStream();
-		stream.Write(p.getBuffer(), 0, (int) p.size());
-		stream.Flush();
-	}
-
-	void Start () 
-	{
-		m_queue = new Queue();
-		try
-		{
-			Debug.Log("Connecting to Java server......");
-			client = new TcpClient(host, port);
-			Debug.Log("Connected to Java server");
-
-			thread = new Thread (new ThreadStart (readPacketsFromServer));
-			thread.Start ();
-		} 
-		catch(Exception e)
-		{
-			Debug.LogError(e.Message);
-			disconnect ();
-		}
-	}
-	
-	// Update is called once per frame 
-	void Update () 
-	{
-		Packet pkt = null;
-		while(m_queue.pop(ref pkt))
-		{
-			PacketHandler.handle(pkt);
-		}
-	}
-
-	void OnDisable()
-	{
-		disconnect ();
+		server.Send(p.getBuffer(), (int) p.size(), ipEndPoint);
 	}
 }

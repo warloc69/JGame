@@ -30,6 +30,13 @@ public class Packet
 		write(arr);
 	}
 
+	public void write(string v, int size)
+	{
+		byte[] arr = BitConverter<string>.GetBytes(v);
+		Array.Resize(ref arr, size);
+		write (arr);
+	}
+
 	public void write<T>(T v)
 	{
 		if(m_finalized)
@@ -46,7 +53,15 @@ public class Packet
 		Buffer.BlockCopy(src, 0, m_buffer, m_write_pos, size);
 		m_write_pos += (byte) size;
 	}
-	
+
+	public byte[] read(int size)
+	{
+		byte[] arr = new byte[size];
+		Buffer.BlockCopy(m_buffer, m_read_pos, arr, 0, size);
+		m_read_pos += (byte) size;
+		return arr;
+	}
+
 	public T read<T>()
 	{
 		int size = Marshal.SizeOf (typeof(T));

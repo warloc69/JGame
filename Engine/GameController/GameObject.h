@@ -3,39 +3,33 @@
 
 #include "Vectors.h"
 
-enum GameObjectMasks
-{
-	OBJ_TYPE_MASK_PLAYER		= 0x0001,
-	OBJ_TYPE_MASK_CREATURE		= 0x0002,
-	OBJ_TYPE_MASK_GAMEOBJECT	= 0x0004,
-	OBJ_TYPE_MASK_UNIT			= OBJ_TYPE_MASK_PLAYER | OBJ_TYPE_MASK_CREATURE,
-	OBJ_TYPE_MASK_OBJECT_3D		= OBJ_TYPE_MASK_UNIT | OBJ_TYPE_MASK_GAMEOBJECT,
-};
-
 class GameObject
 {
 	public:
-		GameObject(GameObjectMasks type);
-		~GameObject();
+		GameObject(uint16 resourceID);
+		virtual ~GameObject();
 
 		DLL_EXPORT uint32 getID();
 		DLL_EXPORT uint32 getClientID();
+		DLL_EXPORT uint16 getResourceID();
 		void setID(uint32 id);
 		void setClientID(uint32 id);
-		DLL_EXPORT uint16 getType();
-		DLL_EXPORT uint64 getGUID();
+		void setResourceID(uint16 resourceID);
 
 		DLL_EXPORT GHVECTOR getPosition();
-		DLL_EXPORT GHVECTOR getRotation();
+		DLL_EXPORT GHVECTOR4 getRotation();
+		DLL_EXPORT GHVECTOR4 getVelocity();
 
 		DLL_EXPORT void move(GHVECTOR v);
-		DLL_EXPORT void rotate(GHVECTOR v);
+		DLL_EXPORT void rotate(GHVECTOR4 v);
+		DLL_EXPORT void setVelocity(GHVECTOR4 v);
 
-	private:
-		uint64 m_guid;
+	protected:
+		uint32 m_guid;
 		uint32 m_client_id;
-		void setType(uint16 type);
+		uint16 m_resource_id;
 
 		GHVECTOR m_position;
-		GHVECTOR m_rotation;
+		GHVECTOR4 m_rotation;
+		GHVECTOR4 m_velocity;
 };

@@ -45,6 +45,9 @@
     <ClInclude Include="StackTracer.h">
       <Filter>Файлы исходного кода\Common</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicObject.h">
+      <Filter>Файлы исходного кода\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vectors.cpp">

@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public class BitConverter<T>
 {
@@ -21,6 +22,7 @@ public class BitConverter<T>
 		BitConverter<UInt64>.GetBytes = x => BitConverter.GetBytes(x);
 		BitConverter<float>.GetBytes  = x => BitConverter.GetBytes(x);
 		BitConverter<double>.GetBytes = x => BitConverter.GetBytes(x);
+		BitConverter<string>.GetBytes = x => Encoding.ASCII.GetBytes(x);
 
 		BitConverter<byte>.ConvertToGeneric   = (arr) => arr[0];
 		BitConverter<bool>.ConvertToGeneric   = (arr) => BitConverter.ToBoolean(arr, 0);
@@ -33,5 +35,6 @@ public class BitConverter<T>
 		BitConverter<UInt64>.ConvertToGeneric = (arr) => BitConverter.ToUInt64(arr, 0);
 		BitConverter<float>.ConvertToGeneric  = (arr) => BitConverter.ToSingle(arr, 0);
 		BitConverter<double>.ConvertToGeneric = (arr) => BitConverter.ToDouble(arr, 0);
+		BitConverter<string>.ConvertToGeneric = (arr) => Encoding.ASCII.GetString(arr);
 	}
 }
