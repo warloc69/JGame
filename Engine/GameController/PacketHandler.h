@@ -18,5 +18,6 @@ class PacketHandler
 		// handlers
 		static void handleGameObjectMovePacket(Packet p);
 		static void handleGameObjectFirePacket(Packet p);
+		static void handleGameObjectSpawnPacket(Packet p);
 };
 

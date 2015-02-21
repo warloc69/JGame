@@ -10,10 +10,12 @@ using UnityEditor;
 
 public class JavaClient : MonoBehaviour 
 {
+	public static byte[] sessionKey = null;
+
 	// TODO: read from properties
 	private static int readPort = 6669;
 	private static int sendPort = 6670;
-	private static string serverIPAddress = "127.0.0.1"; 
+	private static string serverIPAddress = "127.0.0.1";
 
 	private static UdpClient m_client;
 	private static Thread m_thread;
@@ -38,6 +40,7 @@ public class JavaClient : MonoBehaviour
 	
 	void OnDestroy()
 	{
+		sendPacket (PacketBuilder.disconnectPacket ());
 		stop();
 	}
 

@@ -7,7 +7,7 @@ GameObject::GameObject(uint16 resourceID)
 	m_resource_id = resourceID;
 	m_position = GHVECTOR();
 	m_rotation = GHVECTOR4();
-	m_velocity = GHVECTOR4();
+	m_velocity = GHVECTOR();
 }
 
 GameObject::~GameObject()
@@ -64,12 +64,12 @@ void GameObject::rotate(GHVECTOR4 v)
 	m_rotation = v;
 }
 
-GHVECTOR4 GameObject::getVelocity()
+GHVECTOR GameObject::getVelocity()
 {
 	return m_velocity;
 }
 
-void GameObject::setVelocity(GHVECTOR4 v)
+void GameObject::setVelocity(GHVECTOR v)
 {
 	m_velocity = v;
 }

@@ -18,11 +18,11 @@ class GameObject
 
 		DLL_EXPORT GHVECTOR getPosition();
 		DLL_EXPORT GHVECTOR4 getRotation();
-		DLL_EXPORT GHVECTOR4 getVelocity();
+		DLL_EXPORT GHVECTOR getVelocity();
 
 		DLL_EXPORT void move(GHVECTOR v);
 		DLL_EXPORT void rotate(GHVECTOR4 v);
-		DLL_EXPORT void setVelocity(GHVECTOR4 v);
+		DLL_EXPORT void setVelocity(GHVECTOR v);
 
 	protected:
 		uint32 m_guid;
@@ -31,5 +31,5 @@ class GameObject
 
 		GHVECTOR m_position;
 		GHVECTOR4 m_rotation;
-		GHVECTOR4 m_velocity;
+		GHVECTOR m_velocity;
 };

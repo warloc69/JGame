@@ -3,6 +3,7 @@ package org.jgame.udp;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * Packet class - wrapper for byte array
@@ -41,7 +42,7 @@ public class Packet {
     {
         int size = 1 + Short.BYTES + data.length + 1;
         ByteBuffer bb = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
-        bb.put((byte)(data.length));
+        bb.put((byte) (data.length));
         bb.putShort(id);
         bb.put(data);
         bb.put((byte)'\n');
@@ -51,7 +52,7 @@ public class Packet {
     public static Packet generateAuthResponsePacket(byte authResult, byte[] sessionKey)
     {
         ByteBuffer bb = ByteBuffer.allocate(sessionKey.length+5).order(ByteOrder.LITTLE_ENDIAN);
-        bb.put((byte)(sessionKey.length));
+        bb.put((byte)(1+sessionKey.length));
         bb.putShort(Packets.S_PKT_AUTH_RESPONSE);
         bb.put(authResult);
         bb.put(sessionKey);

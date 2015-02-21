@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class DynamicObject : MonoBehaviour
 {
-	private float m_life_time = 1 * 5;
-	private float m_radius = 1;
+	public float m_life_time = 1 * 5;
 	public Vector3 m_velocity = new Vector3();
 
 	void Start()
@@ -15,6 +14,6 @@ public class DynamicObject : MonoBehaviour
 
 	void Update()
 	{
-		this.transform.position += m_velocity * Time.deltaTime;
+		//this.transform.position += m_velocity * Time.deltaTime;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -31,7 +32,6 @@ public class UDPJavaServer
         final int readPort = 6670;
         final int sendPort = 6669;
         final int bufferSize = 0xFF;
-        final InetAddress clientIPAddress = InetAddress.getByName("localhost");
 
         ///// separate thread for read packets from engine
         ///// C++ => Java => C#
@@ -44,6 +44,9 @@ public class UDPJavaServer
                         if (arr.length == 0)
                             continue;
                         Packet pkt = new Packet(arr, true);
+                        InetAddress clientIPAddress = getIPAddressByClientID(pkt.clientID);
+                        if(clientIPAddress == null)
+                            continue;
                         byte[] data = pkt.convertForClient();
                         DatagramPacket dp = new DatagramPacket(data, data.length, clientIPAddress, sendPort);
                         client.send(dp);
@@ -74,8 +77,7 @@ public class UDPJavaServer
 
                         /// validate
                         byte[] arr = unityInUdpPacket.getData();
-                        if(arr[arr[0] + 3] != '\n')
-                        {
+                        if(arr[arr[0] + 3] != '\n') {
                             System.out.println("Broken packet, incorrect EOF");
                             continue;
                         }
@@ -85,13 +87,15 @@ public class UDPJavaServer
                         System.out.println("Incoming packet :: id=" + pkt.id);
 
                         // handle client packets
-                        switch(pkt.id)
-                        {
+                        switch(pkt.id) {
+
+                            /// handle not-authorized client packets
+
                             case Packets.C_PKT_AUTH_REQUEST:
                             {
-                                byte authRequest = pkt.data[40];
+                                byte authRequest = pkt.data[52];
                                 byte[] login = Arrays.copyOfRange(pkt.data, 0, 20);
-                                byte[] password = Arrays.copyOfRange(pkt.data, 21, 40);
+                                byte[] password = Arrays.copyOfRange(pkt.data, 20, 52);
                                 InetAddress ip = unityInUdpPacket.getAddress();
 
                                 byte[] sessionKey = new byte[32];
@@ -103,17 +107,59 @@ public class UDPJavaServer
                                 server.send(dp);
                             } break;
 
-                            case Packets.CE_PKT_GO_MOVE:
-                            case Packets.CE_PKT_GO_FIRE:
+                            /// handle authorized client packets
+
+                            case Packets.C_PKT_DISCONNECT:
+                            {
+                                byte[] key = pkt.data;
+                                handleDisconnect(key);
+                            } break;
+
+                            case Packets.C_PKT_GO_FIRE:
+                            {
+                                byte[] sessionKey = Arrays.copyOfRange(pkt.data, 0, 32);
+                                pkt.data = Arrays.copyOfRange(pkt.data, 32, pkt.data.length);
+                                SessionData sessionData = findBySessionKey(new String(sessionKey).trim());
+                                if(sessionData == null) {
+                                    Packet unityOutUdpPacket = Packet.generateAuthResponsePacket(AuthorizationResults.AUTH_DISCONNECTED, sessionKey);
+                                    byte[] data = unityOutUdpPacket.convertForClient();
+                                    DatagramPacket dp = new DatagramPacket(data, data.length, unityInUdpPacket.getAddress(), sendPort);
+                                    server.send(dp);
+                                }
+
+                                sendFireMessageToEngine(pkt.convertForEngine(sessionData.clientGUID));
+                            } break;
+
+
+                            case Packets.C_PKT_GO_MOVE:
+                            {
+                                byte[] sessionKey = Arrays.copyOfRange(pkt.data, 0, 32);
+                                pkt.data = Arrays.copyOfRange(pkt.data, 32, pkt.data.length);
+                                SessionData sessionData = findBySessionKey(new String(sessionKey).trim());
+
+                                sendMoveMessageToEngine(pkt.convertForEngine(sessionData.clientGUID));
+                            } break;
+
+                            case Packets.C_PKT_GO_SPAWN:
+                            case Packets.C_PKT_GO_DESTROY:
+                            {
+                                byte[] sessionKey = Arrays.copyOfRange(pkt.data, 0, 32);
+                                pkt.data = Arrays.copyOfRange(pkt.data, 32, pkt.data.length);
+                                SessionData sessionData = findBySessionKey(new String(sessionKey).trim());
+
+                                sendSpawnMessageToEngine(pkt.convertForEngine(sessionData.clientGUID));
+                            } break;
+
                             case Packets.C_PKT_GO_PARAM_UPDATE:
                             case Packets.C_PKT_PLAYER_ACTION:
-                            case Packets.CE_PKT_GO_SPAWN:
-                            case Packets.CE_PKT_GO_DESTROY:
-                                break;
+                            {
+                                System.out.println("Unhandled packet :: id=" + pkt.id);
+                            } break;
 
                             default:
-                                System.out.println("Unknown packet or received not from unity :: id="+pkt.id);
-                                break;
+                            {
+                                System.out.println("Unknown packet or received not from unity :: id=" + pkt.id);
+                            } break;
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -132,12 +178,34 @@ public class UDPJavaServer
         Scanner sc = new Scanner(System.in);
         while(sc.hasNextLine()) {
             String msg = sc.nextLine();
+            if(msg.equals("stop"))
+                break;
         }
 
         tEngineThread.interrupt();
         tUnityThread.interrupt();
         client.close();
         server.close();
+    }
+
+    private static SessionData findBySessionKey(String key) {
+        for(SessionData sd : sessionMap.values()) {
+            if(key.equals(sd.sessionKey))
+                return sd;
+        }
+        return null;
+    }
+
+    private static InetAddress getIPAddressByClientID(int clientID) {
+        for(SessionData sd : sessionMap.values()) {
+            if(clientID == sd.clientGUID)
+                try {
+                    return InetAddress.getByName(sd.ip);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+        }
+        return null;
     }
 
     private static byte handleAuthRequest(byte authRequest, byte[] login, byte[] password, InetAddress unityClientAddress, byte[] sessionKey) {
@@ -153,12 +221,14 @@ public class UDPJavaServer
                     return AuthorizationResults.AUTH_NOT_REGISTERED;
                 if (session.isBanned)
                     return AuthorizationResults.AUTH_BANNED;
-                if (session.sessionKey != null && !unityClientAddress.getHostAddress().equals(session.ipAddress))
+                if (session.sessionKey != null && !unityClientAddress.getHostName().equals(session.ip))
                     return AuthorizationResults.AUTH_ALREADY_CONNECTED;
                 byte[] key = generateSessionKey(login, md5.getBytes());;
                 for(int i = 0; i < key.length; i++)
                     sessionKey[i] = key[i];
                 session.sessionKey = new String(sessionKey).trim();
+
+                /// send spawn pkt to engine
             } break;
 
             case 1: {// registration
@@ -168,7 +238,7 @@ public class UDPJavaServer
                 SessionData newSession = new SessionData();
                 newSession.login = loginStr;
                 newSession.encryptedPassword = md5;
-                newSession.ipAddress = unityClientAddress.getHostAddress();
+                newSession.ip = unityClientAddress.getHostName();
                 newSession.clientGUID = 5; //TODO
                 newSession.isBanned = false;
 
@@ -177,6 +247,16 @@ public class UDPJavaServer
         }
 
         return authRequest == 0 ? AuthorizationResults.AUTH_CONNECTION_SUCCESS : AuthorizationResults.AUTH_REGISTRATION_SUCCESS;
+    }
+
+    private static void handleDisconnect(byte[] key) {
+        if(key.length != 32)
+            return;
+        String keyMD5 = new String(key).trim();
+        SessionData sd = findBySessionKey(keyMD5);
+        if(sd == null)
+            return;
+        sd.sessionKey = null;
     }
 
     private static byte[] generateSessionKey(byte[] login, byte[] password) {
@@ -188,7 +268,7 @@ public class UDPJavaServer
     private static class SessionData {
         public String login;
         public String encryptedPassword;
-        public String ipAddress;
+        public String ip;
         public String sessionKey;
         public int clientGUID;
         public boolean isBanned;

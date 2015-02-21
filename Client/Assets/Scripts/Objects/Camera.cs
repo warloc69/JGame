@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Camera : MonoBehaviour {
-	public Transform target;
+	public static Transform target;
 	public float behindDist = 10;
 	public float upDist = 5;
 	private float distanceOffset = 0;

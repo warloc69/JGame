@@ -12,7 +12,7 @@ public class PacketHandler : MonoBehaviour
 
 		switch(id)
 		{
-			case (short)Packets.CE_PKT_GO_MOVE:
+			case (short)Packets.E_PKT_GO_MOVE:
 				handleGameObjectMovePacket(pkt);
 				break;
 
@@ -68,15 +68,35 @@ public class PacketHandler : MonoBehaviour
 		float rotY = p.read<float>();
 		float rotZ = p.read<float>();
 		float rotW = p.read<float>();
+		float velX = p.read<float>();
+		float velY = p.read<float>();
+		float velZ = p.read<float>();
 
 		Debug.Log ("objID=" + objectID + ",posX=" + posX + ",posY=" + posY + ",posZ=" + posZ + 
-		           ",rotX=" + rotX + ",rotY=" + rotY + ",rotZ=" + rotZ);
+		           ",rotX=" + rotX + ",rotY=" + rotY + ",rotZ=" + rotZ +
+				   ",velX=" + velX + ",velY=" + velY + ",velZ=" + rotZ);
 
 		// TODO: find prefab by resource id
-		GameObject obj = (GameObject) Instantiate(Resources.Load ("Player", typeof(GameObject)));
-		obj.name = "" + objectID;
-		obj.transform.position.Set(posX, posY, posZ);
-		obj.transform.rotation.Set(rotX, rotY, rotZ, rotW);
+		if(resourceID == 1)
+		{
+			GameObject obj = (GameObject) Instantiate(Resources.Load ("Player", typeof(GameObject)));
+			obj.name = "" + objectID;
+			obj.transform.position.Set(posX, posY, posZ);
+			obj.transform.rotation.Set(rotX, rotY, rotZ, rotW);
+
+			/// set camera
+			Camera.target = obj.transform;
+
+		}
+		else if(resourceID == 2)
+		{
+			DynamicObject obj = (DynamicObject) Instantiate(Resources.Load ("Dynamic", typeof(DynamicObject)));
+			obj.name = "d:" + objectID;
+			obj.transform.position.Set(posX, posY, posZ);
+			obj.transform.rotation.Set(rotX, rotY, rotZ, rotW);
+			if(obj.transform.rigidbody != null)
+				obj.transform.rigidbody.velocity.Set(velX, velY, velZ);
+		}
 
 		Debug.Log("PacketHandler::handleGameObjectSpawnPacket end");
 	}
@@ -97,6 +117,9 @@ public class PacketHandler : MonoBehaviour
 				break;
 			case (byte)AuthorizationResults.AUTH_DISCONNECTED:
 				InputFieldUI.showWarningPopup("Disconnected");
+				JavaClient.sessionKey = null;
+				GameObject.Find ("Canvas").SetActive (true);
+				Player.isActive = false;
 				break;
 			case (byte)AuthorizationResults.AUTH_NOT_REGISTERED:
 				InputFieldUI.showWarningPopup("Not registered");
@@ -109,11 +132,12 @@ public class PacketHandler : MonoBehaviour
 				break;
 			case (byte)AuthorizationResults.AUTH_CONNECTION_SUCCESS:
 				InputFieldUI.showWarningPopup("Connected");
-				byte[] sessionKey = p.read(32);
-				string key = BitConverter<string>.ConvertToGeneric (sessionKey);
+				JavaClient.sessionKey = p.read(32);
+
+				/// spawn object request
+				JavaClient.sendPacket(PacketBuilder.gameObjectSpawn(1, new Vector3(0,10,0), new Vector4(0,0,0,1), new Vector3()));
 				
-				Debug.Log("sessionKey=" + key);
-				GameObject.Find ("Canvas").SetActive (false);
+			    GameObject.Find ("Canvas").SetActive (false);
 				Player.isActive = true;
 				break;
 		}
@@ -121,4 +145,5 @@ public class PacketHandler : MonoBehaviour
 
 		//Debug.Log("PacketHandler::handleAuthResponsePacket end");
 	}
+
 }

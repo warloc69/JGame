@@ -23,13 +23,7 @@ public class Player : MonoBehaviour
 		// fire
 		if(Input.GetMouseButtonDown(0))
 		{
-			Debug.Log("Fire!!! :: 0");
-			DynamicObject obj = (DynamicObject) Instantiate(Resources.Load ("Dynamic", typeof(DynamicObject)));
-			obj.name = "dynamic";
-			obj.transform.position = this.transform.position + this.transform.forward * 1;
-			obj.m_velocity = this.transform.forward.normalized * 5;
-
-			JavaClient.sendPacket(PacketBuilder.gameObjectFire(this.GetInstanceID(), (short) 5, obj.m_velocity));
+			JavaClient.sendPacket(PacketBuilder.gameObjectFire((short) 2, this.transform.forward));
 		}
 
 		// rotate by mouse
@@ -44,5 +38,7 @@ public class Player : MonoBehaviour
 		if (vertical == 0 && horizontal == 0) return;
 		transform.Rotate (0, rotationSpeed * Time.deltaTime * horizontal, 0);
 		controller.Move (transform.forward * speed * Time.deltaTime * vertical);
+
+		JavaClient.sendPacket(PacketBuilder.gameObjectMove(this.transform.position, this.transform.rotation));
 	}
 }
