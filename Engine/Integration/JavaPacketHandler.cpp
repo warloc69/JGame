@@ -12,9 +12,9 @@ std::vector<T> ARRAY_TO_VECTOR(T* v, size_t N)
 	return result;
 };
 
-JNIEXPORT void JNICALL Java_org_jgame_server_core_EntryPoint_sendMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray arr)
+JNIEXPORT void JNICALL Java_org_jgame_udp_UDPJavaServer_sendMoveMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray arr)
 {
-	printf("Java_org_jgame_server_core_EntryPoint_sendMessageToEngine :: start\n");
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendMoveMessageToEngine :: start\n");
 
 	// convert incoming java array to byte vector
     int len = pJniEnv->GetArrayLength(arr);
@@ -30,12 +30,54 @@ JNIEXPORT void JNICALL Java_org_jgame_server_core_EntryPoint_sendMessageToEngine
 	// send packet to queue
 	addPacketToEngineQueue(p, QueueTypes::IN_QUEUE_MOVEMENT);
 
-	printf("Java_org_jgame_server_core_EntryPoint_sendMessageToEngine :: end\n");
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendMoveMessageToEngine :: end\n");
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_jgame_server_core_EntryPoint_readMessageFromEngine(JNIEnv* pJniEnv, jclass pJClass)
+JNIEXPORT void JNICALL Java_org_jgame_udp_UDPJavaServer_sendFireMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray arr)
 {
-	//printf("Java_org_jgame_server_core_EntryPoint_readMessageFromEngine :: start\n");
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendFireMessageToEngine :: start\n");
+
+	// convert incoming java array to byte vector
+    int len = pJniEnv->GetArrayLength(arr);
+    uint8* buf = new uint8[len];
+    pJniEnv->GetByteArrayRegion(arr, 0, len, reinterpret_cast<jbyte*>(buf));
+	std::vector<uint8> dataVector = ARRAY_TO_VECTOR(buf, len);
+	delete [] buf;
+
+	// make a packet
+	Packet p;
+	p << dataVector;
+
+	// send packet to queue
+	addPacketToEngineQueue(p, QueueTypes::IN_QUEUE_COLLISION);
+
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendFireMessageToEngine :: end\n");
+}
+
+JNIEXPORT void JNICALL Java_org_jgame_udp_UDPJavaServer_sendSpawnMessageToEngine(JNIEnv* pJniEnv, jclass pJClass, jbyteArray arr)
+{
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendSpawnMessageToEngine :: start\n");
+
+	// convert incoming java array to byte vector
+    int len = pJniEnv->GetArrayLength(arr);
+    uint8* buf = new uint8[len];
+    pJniEnv->GetByteArrayRegion(arr, 0, len, reinterpret_cast<jbyte*>(buf));
+	std::vector<uint8> dataVector = ARRAY_TO_VECTOR(buf, len);
+	delete [] buf;
+
+	// make a packet
+	Packet p;
+	p << dataVector;
+
+	// send packet to queue
+	addPacketToEngineQueue(p, QueueTypes::IN_QUEUE_SPAWN);
+
+	//printf("Java_org_jgame_udp_UDPJavaServer_sendSpawnMessageToEngine :: end\n");
+}
+
+JNIEXPORT jbyteArray JNICALL Java_org_jgame_udp_UDPJavaServer_readMessageFromEngine(JNIEnv* pJniEnv, jclass pJClass)
+{
+	//printf("Java_org_jgame_udp_UDPJavaServer_readMessageFromEngine :: start\n");
 
 	// read packet
 	Packet pkt;
@@ -48,6 +90,6 @@ JNIEXPORT jbyteArray JNICALL Java_org_jgame_server_core_EntryPoint_readMessageFr
 	uint8* buf = pkt.getBuffer();
 	pJniEnv->SetByteArrayRegion(arr, 0, len, reinterpret_cast<jbyte*>(buf));
 
-	//printf("Java_org_jgame_server_core_EntryPoint_readMessageFromEngine :: end\n");
+	//printf("Java_org_jgame_udp_UDPJavaServer_readMessageFromEngine :: end\n");
 	return arr;
 }

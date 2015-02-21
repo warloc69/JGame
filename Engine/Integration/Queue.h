@@ -20,14 +20,14 @@ template <typename T, size_t N> struct Queue
 		}
 
 		//!Adds element (T v) into queue. Returns false in case when queue is full.
-		void push(T v)
+		bool push(T v)
 		{
 			m_mutex.lock();
 
 			if(m_size == N)
 			{
 				m_mutex.unlock();
-				return;
+				return false;
 			}
 
 			m_list[m_writer] = v;
@@ -35,6 +35,7 @@ template <typename T, size_t N> struct Queue
 			m_size++;
 
 			m_mutex.unlock();
+			return true;
 		}
 
 		//!Reads element (T& v) from queue. Return false in case of empty queue.

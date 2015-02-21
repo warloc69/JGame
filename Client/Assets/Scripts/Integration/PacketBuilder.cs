@@ -39,29 +39,17 @@ public class PacketBuilder
 		return p;
 	}
 
-	public static Packet authorizeUserPacket(string clientName, string password)
+	public static Packet authRequestPacket(string clientName, string password, byte authRequest)
 	{
 		Packet p = new Packet ();
 
-		p.write<byte> (40);
-		p.write<short> ((short)Packets.C_PKT_AUTHORIZE_USER);
+		p.write<byte> (41);
+		p.write<short> ((short)Packets.C_PKT_AUTH_REQUEST);
 		p.write(clientName, 20);
 		p.write(password, 20);
+		p.write<byte> (authRequest);
 		p.finalize ();
 
-		return p;
-	}
-
-	public static Packet registerUserPacket(string clientName, string password)
-	{
-		Packet p = new Packet ();
-		
-		p.write<byte> (40);
-		p.write<short> ((short)Packets.C_PKT_REGISTER_USER);
-		p.write(clientName, 20);
-		p.write(password, 20);
-		p.finalize ();
-		
 		return p;
 	}
 }

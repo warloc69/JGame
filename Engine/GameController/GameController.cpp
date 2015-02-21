@@ -143,12 +143,14 @@ bool GameController::readQueue(QueueTypes type)
 				received = data->inMovementQueue.pop(p);
 			else if(type == IN_QUEUE_COLLISION)
 				received = data->inCollisionQueue.pop(p);
+			else if(type == IN_QUEUE_SPAWN)
+				received = data->inSpawnQueue.pop(p);
 			else if(type == OUT_QUEUE)
 				received = data->outQueue.pop(p);
 
 			if(!received)
 			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+				boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 				continue;
 			}
 

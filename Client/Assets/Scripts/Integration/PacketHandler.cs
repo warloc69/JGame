@@ -20,8 +20,8 @@ public class PacketHandler : MonoBehaviour
 				handleGameObjectSpawnPacket(pkt);
 				break;
 
-			case (short)Packets.S_PKT_GEN_SESSION_KEY:
-				handleGenerateSessionKeyPacket(pkt);
+			case (short)Packets.S_PKT_AUTH_RESPONSE:
+				handleAuthResponsePacket(pkt);
 				break;
 
 			default:
@@ -81,18 +81,44 @@ public class PacketHandler : MonoBehaviour
 		Debug.Log("PacketHandler::handleGameObjectSpawnPacket end");
 	}
 
-	private static void handleGenerateSessionKeyPacket(Packet p)
+	private static void handleAuthResponsePacket(Packet p)
 	{
-		Debug.Log("PacketHandler::handleGenerateSessionKeyPacket start");
+		//Debug.Log("PacketHandler::handleAuthResponsePacket start");
 		
 		// parse packet
-		byte[] sessionKey = p.read(20);
-		string key = BitConverter<string>.ConvertToGeneric (sessionKey);
-		
-		Debug.Log("sessionKey=" + key);
-		GameObject.Find ("Canvas").SetActive (false);
-		Player.isActive = true;
+		byte authResponse = p.read<byte> ();
+		switch(authResponse)
+		{
+			case (byte)AuthorizationResults.AUTH_ALREADY_CONNECTED:
+				InputFieldUI.showWarningPopup("Already connected");
+				break;
+			case (byte)AuthorizationResults.AUTH_BANNED:
+				InputFieldUI.showWarningPopup("Banned");
+				break;
+			case (byte)AuthorizationResults.AUTH_DISCONNECTED:
+				InputFieldUI.showWarningPopup("Disconnected");
+				break;
+			case (byte)AuthorizationResults.AUTH_NOT_REGISTERED:
+				InputFieldUI.showWarningPopup("Not registered");
+				break;
+			case (byte)AuthorizationResults.AUTH_REGISTRATION_SUCCESS:
+				InputFieldUI.showWarningPopup("Registered");
+				break;
+			case (byte)AuthorizationResults.AUTH_ALREADY_EXIST:
+				InputFieldUI.showWarningPopup("Login already exists");
+				break;
+			case (byte)AuthorizationResults.AUTH_CONNECTION_SUCCESS:
+				InputFieldUI.showWarningPopup("Connected");
+				byte[] sessionKey = p.read(32);
+				string key = BitConverter<string>.ConvertToGeneric (sessionKey);
+				
+				Debug.Log("sessionKey=" + key);
+				GameObject.Find ("Canvas").SetActive (false);
+				Player.isActive = true;
+				break;
+		}
 
-		Debug.Log("PacketHandler::handleGenerateSessionKeyPacket end");
+
+		//Debug.Log("PacketHandler::handleAuthResponsePacket end");
 	}
 }

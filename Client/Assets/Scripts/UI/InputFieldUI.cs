@@ -37,7 +37,7 @@ public class InputFieldUI : MonoBehaviour
 			return;
 		}
 
-		Packet p = PacketBuilder.authorizeUserPacket (loginField.text, passField.text);
+		Packet p = PacketBuilder.authRequestPacket (loginField.text, passField.text, 0);
 		JavaClient.sendPacket(p);
 	}
 
@@ -60,7 +60,7 @@ public class InputFieldUI : MonoBehaviour
 			return;
 		}
 
-		Packet p = PacketBuilder.registerUserPacket (loginField.text, passField.text);
+		Packet p = PacketBuilder.authRequestPacket (loginField.text, passField.text, 1);
 		JavaClient.sendPacket(p);
 	}
 	

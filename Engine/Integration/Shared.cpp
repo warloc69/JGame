@@ -3,7 +3,7 @@
 
 void addPacketToEngineQueue(Packet in, QueueTypes queueType)
 {
-	printf("addPacketToEngineQueue :: start\n");
+	//printf("addPacketToEngineQueue :: start\n");
 
 	try {
 		// open shared memory file
@@ -23,6 +23,9 @@ void addPacketToEngineQueue(Packet in, QueueTypes queueType)
 			case IN_QUEUE_COLLISION:
 				data->inCollisionQueue.push(in);
 				break;
+			case IN_QUEUE_SPAWN:
+				data->inSpawnQueue.push(in);
+				break;
 			case OUT_QUEUE:
 				data->outQueue.push(in);
 				break;
@@ -31,7 +34,7 @@ void addPacketToEngineQueue(Packet in, QueueTypes queueType)
 		printf("interprocess_exception = %s\n", ex.what());
 	}
 
-	printf("addPacketToEngineQueue :: end\n");
+	//printf("addPacketToEngineQueue :: end\n");
 }
 
 bool readPacketFromEngineQueue(Packet& p, QueueTypes queueType)
@@ -54,11 +57,13 @@ bool readPacketFromEngineQueue(Packet& p, QueueTypes queueType)
 				return data->inMovementQueue.pop(p);
 			case IN_QUEUE_COLLISION:
 				return data->inCollisionQueue.pop(p);
+			case IN_QUEUE_SPAWN:
+				return data->inSpawnQueue.pop(p);
 			case OUT_QUEUE:
 				return data->outQueue.pop(p);
 		}
 	} catch(interprocess_exception &ex) {
-		printf("interprocess_exception = %s\n", ex.what());
+		//printf("interprocess_exception = %s\n", ex.what());
 	}
 
 	//printf("readPacketFromEngineQueue :: false end\n");

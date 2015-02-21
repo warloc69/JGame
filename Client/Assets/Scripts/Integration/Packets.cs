@@ -2,13 +2,13 @@ using System;
 
 public enum Packets : short
 {
-	C_PKT_REGISTER_USER		= 1,
-	C_PKT_AUTHORIZE_USER	= 2,
+	C_PKT_AUTH_REQUEST      = 1,
+	S_PKT_AUTH_RESPONSE     = 2,
 	CE_PKT_GO_MOVE			= 3,
 	CE_PKT_GO_FIRE			= 4,
 	C_PKT_GO_PARAM_UPDATE	= 5,
 	C_PKT_PLAYER_ACTION		= 6,
-	S_PKT_GEN_SESSION_KEY 	= 7,
+
 	
 	
 	E_PKT_GO_SPAWN			= 10,
