@@ -87,14 +87,12 @@ public class PacketBuilder
 	}
 
 	public static Packet disconnectPacket()
-	{
+	{   
 		Packet p = new Packet ();
-
-		p.write<byte> (0+32);
+		p.write<byte> (0 + 32);
 		p.write<short> ((short)Packets.C_PKT_DISCONNECT);
 		p.write (JavaClient.sessionKey);
 		p.finalize ();
-
 		return p;
 	}
 }

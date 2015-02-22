@@ -40,7 +40,9 @@ public class JavaClient : MonoBehaviour
 	
 	void OnDestroy()
 	{
-		sendPacket (PacketBuilder.disconnectPacket ());
+		if (Player.isActive) {
+			sendPacket (PacketBuilder.disconnectPacket ());
+		}
 		stop();
 	}
 
