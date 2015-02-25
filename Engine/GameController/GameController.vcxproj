@@ -19,11 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="baseTypes.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="Packets.h" />
     <ClInclude Include="StackTracer.h" />
     <ClInclude Include="Vectors.h" />
   </ItemGroup>

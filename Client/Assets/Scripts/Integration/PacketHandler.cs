@@ -7,21 +7,22 @@ public class PacketHandler : MonoBehaviour
 	public static void handle(Packet pkt)
 	{
 		pkt.resetRead();
-		pkt.read<byte>();//read size byte
 		short id = pkt.read<short>();
 
 		switch(id)
 		{
-			case (short)Packets.E_PKT_GO_MOVE:
+            /// authorization packets
+            case (short)Packets.S_PKT_AUTH_RESPONSE:
+                handleAuthResponsePacket(pkt);
+                break;
+
+            /// world packets
+            case (short)Packets.E_PKT_GO_MOVE:
 				handleGameObjectMovePacket(pkt);
 				break;
 
 			case (short)Packets.E_PKT_GO_SPAWN:
 				handleGameObjectSpawnPacket(pkt);
-				break;
-
-			case (short)Packets.S_PKT_AUTH_RESPONSE:
-				handleAuthResponsePacket(pkt);
 				break;
 
 			default:
@@ -30,7 +31,53 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
-	private static void handleGameObjectMovePacket(Packet p)
+    private static void handleAuthResponsePacket(Packet p)
+    {
+        Debug.Log("PacketHandler::handleAuthResponsePacket start");
+
+        // parse packet
+        byte authResponse = p.read<byte>();
+        switch (authResponse)
+        {
+            case (byte)AuthorizationResults.AUTH_ALREADY_CONNECTED:
+                InputFieldUI.showWarningPopup("Already connected");
+                break;
+
+            case (byte)AuthorizationResults.AUTH_BANNED:
+                InputFieldUI.showWarningPopup("Banned");
+                break;
+
+            case (byte)AuthorizationResults.AUTH_DISCONNECTED:
+                InputFieldUI.showWarningPopup("Disconnected");
+                AuthorizationClient.sessionKey = null;
+                GameObject.Find("Canvas").SetActive(true);
+                break;
+
+            case (byte)AuthorizationResults.AUTH_NOT_REGISTERED:
+                InputFieldUI.showWarningPopup("Not registered");
+                break;
+
+            case (byte)AuthorizationResults.AUTH_REGISTRATION_SUCCESS:
+                InputFieldUI.showWarningPopup("Registered");
+                break;
+
+            case (byte)AuthorizationResults.AUTH_ALREADY_EXIST:
+                InputFieldUI.showWarningPopup("Login already exists");
+                break;
+
+            case (byte)AuthorizationResults.AUTH_CONNECTION_SUCCESS:
+                AuthorizationClient.sessionKey = p.read(32);
+
+                GameObject.Find("Canvas").SetActive(false);
+                Debug.Log(" :: AUTH_CONNECTION_SUCCESS :: ");
+                break;
+        }
+
+
+        //Debug.Log("PacketHandler::handleAuthResponsePacket end");
+    }
+
+    private static void handleGameObjectMovePacket(Packet p)
 	{
 		Debug.Log("PacketHandler::handleGameObjectMovePacket start");
 
@@ -100,50 +147,4 @@ public class PacketHandler : MonoBehaviour
 
 		Debug.Log("PacketHandler::handleGameObjectSpawnPacket end");
 	}
-
-	private static void handleAuthResponsePacket(Packet p)
-	{
-		//Debug.Log("PacketHandler::handleAuthResponsePacket start");
-		
-		// parse packet
-		byte authResponse = p.read<byte> ();
-		switch(authResponse)
-		{
-			case (byte)AuthorizationResults.AUTH_ALREADY_CONNECTED:
-				InputFieldUI.showWarningPopup("Already connected");
-				break;
-			case (byte)AuthorizationResults.AUTH_BANNED:
-				InputFieldUI.showWarningPopup("Banned");
-				break;
-			case (byte)AuthorizationResults.AUTH_DISCONNECTED:
-				InputFieldUI.showWarningPopup("Disconnected");
-				JavaClient.sessionKey = null;
-				GameObject.Find ("Canvas").SetActive (true);
-				Player.isActive = false;
-				break;
-			case (byte)AuthorizationResults.AUTH_NOT_REGISTERED:
-				InputFieldUI.showWarningPopup("Not registered");
-				break;
-			case (byte)AuthorizationResults.AUTH_REGISTRATION_SUCCESS:
-				InputFieldUI.showWarningPopup("Registered");
-				break;
-			case (byte)AuthorizationResults.AUTH_ALREADY_EXIST:
-				InputFieldUI.showWarningPopup("Login already exists");
-				break;
-			case (byte)AuthorizationResults.AUTH_CONNECTION_SUCCESS:
-				InputFieldUI.showWarningPopup("Connected");
-				JavaClient.sessionKey = p.read(32);
-
-				/// spawn object request
-				JavaClient.sendPacket(PacketBuilder.gameObjectSpawn(1, new Vector3(0,10,0), new Vector4(0,0,0,1), new Vector3()));
-				
-			    GameObject.Find ("Canvas").SetActive (false);
-				Player.isActive = true;
-				break;
-		}
-
-
-		//Debug.Log("PacketHandler::handleAuthResponsePacket end");
-	}
-
 }

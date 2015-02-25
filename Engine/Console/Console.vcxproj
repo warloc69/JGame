@@ -153,10 +153,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ServerConsole.h" />
+    <ClInclude Include="AuthorizationServer.h" />
+    <ClInclude Include="UDPServer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AuthorizationServer.cpp" />
     <ClCompile Include="ServerConsole.cpp" />
+    <ClCompile Include="UDPServer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

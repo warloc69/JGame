@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
 		// fire
 		if(Input.GetMouseButtonDown(0))
 		{
-			JavaClient.sendPacket(PacketBuilder.gameObjectFire((short) 2, this.transform.forward));
+            //AuthorizationClient.sendPacket(PacketBuilder.gameObjectFire((short)2, this.transform.forward));
 		}
 
 		// rotate by mouse
@@ -39,6 +39,6 @@ public class Player : MonoBehaviour
 		transform.Rotate (0, rotationSpeed * Time.deltaTime * horizontal, 0);
 		controller.Move (transform.forward * speed * Time.deltaTime * vertical);
 
-		JavaClient.sendPacket(PacketBuilder.gameObjectMove(this.transform.position, this.transform.rotation));
+        //AuthorizationClient.sendPacket(PacketBuilder.gameObjectMove(this.transform.position, this.transform.rotation));
 	}
 }

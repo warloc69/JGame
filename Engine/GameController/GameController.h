@@ -8,9 +8,7 @@
 #include <boost\thread\thread.hpp>
 
 #include "PacketHandler.h"
-
-#include "..\Integration\Packets.h"
-#include "..\Integration\Shared.h"
+#include "Packets.h"
 
 class GameController
 {
@@ -21,26 +19,14 @@ class GameController
 		GameObject* spawnGameObject(uint16 resourceID, GHVECTOR v);
 		DynamicObject* spawnDynamicObject(uint16 resourceID, GHVECTOR v);
 
-		DLL_EXPORT bool readQueue(QueueTypes type);
-		DLL_EXPORT void stopQueues();
-		
-		DLL_EXPORT void update(float dt);
-
 		GameObject* findObject(uint32 id);
 		GameObject* findObjectByClient(uint32 clientID);
 
-		void sendPacketToJavaServer(Packet p);
-		
 	protected:
 		GameController();
 		virtual ~GameController() {}
 
 	private:
-		bool m_read_queues;
-		bool m_update;
-
-		mutex m_mutex;
-
 		std::hash_map<uint32,GameObject*> m_gameObjects;
 		void add(GameObject* go);
 		uint32 generateKey();

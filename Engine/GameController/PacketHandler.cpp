@@ -2,20 +2,22 @@
 #include "PacketHandler.h"
 #include "Macro.h"
 #include "GameController.h"
-#include "..\Integration\Packets.h"
+#include "Packets.h"
 
-void PacketHandler::handle(Packet p)
+void PacketHandler::handle(Packet& p)
 {
-	p.resetRead();
-
-	// parse packet ID
+	/// read opcode id
 	uint16 opcodeID;
 	p >> opcodeID;
+
 	printf("Incoming packet :: opcodeID=%d\n", opcodeID);
 
-	// handle packet by ID
 	switch(opcodeID)
 	{
+		case C_PKT_AUTH_REQUEST:
+			//m_authQueue.push(p);
+			break;
+
 		case C_PKT_GO_MOVE:
 			handleGameObjectMovePacket(p);
 			break;
@@ -34,7 +36,7 @@ void PacketHandler::handle(Packet p)
 	}
 }
 
-void PacketHandler::handleGameObjectMovePacket(Packet p)
+void PacketHandler::handleGameObjectMovePacket(Packet& p)
 {
 	printf("PacketHandler::handleGameObjectMovePacket start\n");
 
@@ -65,7 +67,7 @@ void PacketHandler::handleGameObjectMovePacket(Packet p)
 	printf("PacketHandler::handleGameObjectMovePacket end\n");
 }
 
-void PacketHandler::handleGameObjectSpawnPacket(Packet p)
+void PacketHandler::handleGameObjectSpawnPacket(Packet& p)
 {
 	printf("PacketHandler::handleGameObjectSpawnPacket start\n");
 
@@ -94,7 +96,7 @@ void PacketHandler::handleGameObjectSpawnPacket(Packet p)
 	go->setVelocity(GHVECTOR(velX, velY, velZ));
 
 	// notify clients
-	gc->sendPacketToJavaServer(PacketHandler::gameObjectSpawn(clientID, go));
+	//gc->sendPacketToJavaServer(PacketHandler::gameObjectSpawn(clientID, go));
 
 	printf("PacketHandler::handleGameObjectSpawnPacket end\n");
 }
@@ -103,7 +105,7 @@ void PacketHandler::handleGameObjectSpawnPacket(Packet p)
 /// 1. Calculate spawn position by player position, resource and arms type
 /// 2. Spawn internal arms in order to keep on track when damage should be sent to target
 /// 3. Notify all clients that arms have been fired
-void PacketHandler::handleGameObjectFirePacket(Packet p)
+void PacketHandler::handleGameObjectFirePacket(Packet& p)
 {
 	printf("PacketHandler::handleGameObjectFirePacket start\n");
 
@@ -146,7 +148,7 @@ void PacketHandler::handleGameObjectFirePacket(Packet p)
 	/// 3. Notify all clients that arms have been fired
 	////// - TODO: define all affected players
 	Packet notify = PacketHandler::gameObjectSpawn(clientID, armsObject);
-	gc->sendPacketToJavaServer(notify);
+	//gc->sendPacketToJavaServer(notify);
 
 	printf("PacketHandler::handleGameObjectFirePacket end\n");
 }

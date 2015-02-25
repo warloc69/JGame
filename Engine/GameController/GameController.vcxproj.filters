@@ -48,6 +48,15 @@
     <ClInclude Include="DynamicObject.h">
       <Filter>Файлы исходного кода\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Packets.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="baseTypes.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vectors.cpp">

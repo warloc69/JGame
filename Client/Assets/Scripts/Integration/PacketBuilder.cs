@@ -12,7 +12,7 @@ public class PacketBuilder
 
 		p.write<byte>(28+32);		// 1-packet size
 		p.write<short>((short)Packets.C_PKT_GO_MOVE);		// 2-packet id
-		p.write (JavaClient.sessionKey);
+        p.write(AuthorizationClient.sessionKey);
 		p.write<float>(pos.x);// 4-pos x
 		p.write<float>(pos.y);// 4-pos y
 		p.write<float>(pos.z);// 4-pos z
@@ -31,7 +31,7 @@ public class PacketBuilder
 
 		p.write<byte> (14+32);
 		p.write<short>((short)Packets.C_PKT_GO_FIRE);
-		p.write (JavaClient.sessionKey);
+        p.write(AuthorizationClient.sessionKey);
 		p.write<short> (armsID);
 		p.write<float> (direction.x);
 		p.write<float> (direction.y);
@@ -47,7 +47,7 @@ public class PacketBuilder
 		
 		p.write<byte> (42+32);
 		p.write<short>((short)Packets.C_PKT_GO_SPAWN);
-		p.write (JavaClient.sessionKey);
+        p.write(AuthorizationClient.sessionKey);
 		p.write<short> (resourceID);
 		p.write<float> (position.x);
 		p.write<float> (position.y);
@@ -72,13 +72,15 @@ public class PacketBuilder
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < data.Length; i++)
 			sb.Append(data[i].ToString("x2"));
+
+		Debug.Log (sb.ToString ());
 		///
 
 		Packet p = new Packet ();
 
 		p.write<byte> (53);
 		p.write<short> ((short)Packets.C_PKT_AUTH_REQUEST);
-		p.write(clientName, 20);
+		p.write(clientName.Trim(), 20);
 		p.write(sb.ToString(), 32);
 		p.write<byte> (authRequest);
 		p.finalize ();
@@ -87,12 +89,14 @@ public class PacketBuilder
 	}
 
 	public static Packet disconnectPacket()
-	{   
+	{
 		Packet p = new Packet ();
-		p.write<byte> (0 + 32);
+
+		p.write<byte> (0+32);
 		p.write<short> ((short)Packets.C_PKT_DISCONNECT);
-		p.write (JavaClient.sessionKey);
+        p.write(AuthorizationClient.sessionKey);
 		p.finalize ();
+
 		return p;
 	}
 }

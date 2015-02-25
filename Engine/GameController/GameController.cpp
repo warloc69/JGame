@@ -10,7 +10,6 @@ static GameController* pGameController = GameController::getInstance();
 
 GameController::GameController() 
 {
-	m_read_queues = true;
 }
 
 GameController* const GameController::getInstance()
@@ -23,8 +22,6 @@ GameController* const GameController::getInstance()
 
 void GameController::free()
 {
-	stopQueues();
-
 	SAFE_DELETE_HASH_MAP_V(m_dynamicObjects);
 	SAFE_DELETE_HASH_MAP_V(m_gameObjects);
 	SAFE_DELETE_P(pGameController);
@@ -117,82 +114,4 @@ void GameController::addDynamic(DynamicObject* o)
 	uint32 id = generateDynamicKey();
 	o->setID(id);
 	m_dynamicObjects.insert(std::pair<uint32,DynamicObject*>(id, o));
-}
-
-// method works in a separate thread
-bool GameController::readQueue(QueueTypes type)
-{
-	try {
-		// open shared memory
-		shared_memory_object shm(open_only, SHARED_MEMORY_FILE, read_write);
-		// map region
-		mapped_region region(shm, read_write);
-		// get region address
-		void* addr = region.get_address();
-		// cast memory to buffer
-		shared_memory_buffer* data = static_cast<shared_memory_buffer*>(addr);
-
-		// read loop
-		while(m_read_queues)
-		{
-			Packet p;
-			bool received = false;
-
-			// queue is already threadsafe
-			if(type == IN_QUEUE_MOVEMENT)
-				received = data->inMovementQueue.pop(p);
-			else if(type == IN_QUEUE_COLLISION)
-				received = data->inCollisionQueue.pop(p);
-			else if(type == IN_QUEUE_SPAWN)
-				received = data->inSpawnQueue.pop(p);
-			else if(type == OUT_QUEUE)
-				received = data->outQueue.pop(p);
-
-			if(!received)
-			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(10));
-				continue;
-			}
-
-			PacketHandler::handle(p);
-		}
-	} catch(interprocess_exception &ex) {
-		MessageBoxA(NULL, ex.what(), "Error!", MB_OK | MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
-		return false;
-	}
-
-	return true;
-}
-
-// sends packet to java server
-void GameController::sendPacketToJavaServer(Packet out)
-{
-	try {
-		// open shared memory
-		shared_memory_object shm(open_only, SHARED_MEMORY_FILE, read_write);
-		// map region
-		mapped_region region(shm, read_write);
-		// get region address
-		void* addr = region.get_address();
-		// cast memory to buffer
-		shared_memory_buffer* data = static_cast<shared_memory_buffer*>(addr);
-		// queue is already threadsafe
-		data->outQueue.push(out);
-	} catch(interprocess_exception &ex) {
-		MessageBoxA(NULL, ex.what(), "Error!", MB_OK | MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
-		return;
-	}
-}
-
-void GameController::stopQueues()
-{
-	m_read_queues = false;
-}
-
-void GameController::update(float dt)
-{
-	m_mutex.lock();
-
-
-	m_mutex.unlock();
 }

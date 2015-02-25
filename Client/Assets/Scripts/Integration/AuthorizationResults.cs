@@ -10,4 +10,5 @@ public enum AuthorizationResults : byte
 	AUTH_DISCONNECTED          = 5,
 	AUTH_REGISTRATION_SUCCESS  = 6,
 	AUTH_ALREADY_EXIST         = 7,
+    AUTH_RECONNECT             = 8,
 }
