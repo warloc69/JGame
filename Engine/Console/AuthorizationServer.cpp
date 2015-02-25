@@ -4,8 +4,8 @@
 #include <Wincrypt.h>
 
 #pragma comment(lib, "GameController.lib")
-#include "..\GameController\PacketHandler.h"
 #include "..\GameController\Macro.h"
+#include "..\GameController\Packets.h"
 
 /// Генерирует MD5 закодированную строку по входному массиву байтов
 std::string md5(std::vector<uint8> bytes)
@@ -117,7 +117,7 @@ void AuthorizationServer::handle_packet()
 	uint8 data_size = packet[0];
 	uint16 packet_id = (packet[2] << 8) | packet[1];
 
-	printf("Incoming packet :: packet_id=%d\n", packet_id);
+	printf("Incoming authorization packet :: packet_id=%d\n", packet_id);
 
 	/// Обворачиваем данные массива в пакет
 	Packet p = Packet(data_size);

@@ -155,11 +155,13 @@
   <ItemGroup>
     <ClInclude Include="AuthorizationServer.h" />
     <ClInclude Include="UDPServer.h" />
+    <ClInclude Include="WorldServer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AuthorizationServer.cpp" />
     <ClCompile Include="ServerConsole.cpp" />
     <ClCompile Include="UDPServer.cpp" />
+    <ClCompile Include="WorldServer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

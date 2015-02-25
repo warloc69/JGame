@@ -25,6 +25,9 @@
     <Filter Include="Файлы исходного кода\Stages">
       <UniqueIdentifier>{28fe8b6a-c7aa-4382-b2d9-4b45b2a54c80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Packet">
+      <UniqueIdentifier>{2eb9363f-3538-450c-a1a2-cc409ee6c643}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameController.h">
@@ -39,23 +42,23 @@
     <ClInclude Include="Macro.h">
       <Filter>Файлы исходного кода\Common</Filter>
     </ClInclude>
-    <ClInclude Include="PacketHandler.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
     <ClInclude Include="StackTracer.h">
       <Filter>Файлы исходного кода\Common</Filter>
     </ClInclude>
     <ClInclude Include="DynamicObject.h">
       <Filter>Файлы исходного кода\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
-    <ClInclude Include="Packets.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
     <ClInclude Include="baseTypes.h">
       <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Файлы исходного кода\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Файлы исходного кода\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packets.h">
+      <Filter>Файлы исходного кода\Packet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,11 +71,11 @@
     <ClCompile Include="GameController.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="PacketHandler.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="StackTracer.cpp">
       <Filter>Файлы исходного кода\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Файлы исходного кода\Packet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
