@@ -60,6 +60,19 @@ void UDPServer::accept_packet(const system::error_code& error, size_t n)
 	handle_packet();
 }
 
+/// Асинхронно отправляет пакет адресу пришедшего пакета
+/// Если входящий пакет пришел с адреса сервера, отправка осуществляется на порт сервера +1
+void UDPServer::send_packet(Packet& p)
+{
+	/// use next +1 port if server and client are on the same machine
+	udp::endpoint ep = end_point.address().to_string() == "127.0.0.1"
+		? udp::endpoint(end_point.address(), m_port+1)
+		: end_point;
+
+	m_socket.async_send_to(buffer(p.getBuffer(), p.size()), ep,
+		bind(&UDPServer::on_send_packet, (UDPServer*)this, placeholders::error, bytes_transferred));
+}
+
 /// Срабатывает по отправке пакета клиенту
 void UDPServer::on_send_packet(const system::error_code& error, size_t n)
 {

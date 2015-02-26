@@ -97,19 +97,6 @@ UDPSession* AuthorizationServer::findByLogin(std::string login)
 	return NULL;
 }
 
-/// Асинхронно отправляет пакет адресу пришедшего пакета
-/// Если входящий пакет пришел с адреса сервера, отправка осуществляется на порт сервера +1
-void AuthorizationServer::send_packet(Packet& p)
-{
-	/// use next +1 port if server and client are on the same machine
-	udp::endpoint ep = end_point.address().to_string() == "127.0.0.1"
-		? udp::endpoint(end_point.address(), m_port+1)
-		: end_point;
-
-	m_socket.async_send_to(buffer(p.getBuffer(), p.size()), ep,
-		bind(&UDPServer::on_send_packet, (UDPServer*)this, placeholders::error, bytes_transferred));
-}
-
 /// Обрабатывает получаемые пакеты авторизации
 void AuthorizationServer::handle_packet()
 {

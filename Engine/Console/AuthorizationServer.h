@@ -35,7 +35,6 @@ class AuthorizationServer : UDPServer
 		~AuthorizationServer();
 
 		void handle_packet();
-		void send_packet(Packet& p);
 
 	private:
 		std::hash_map<std::string,UDPSession*> m_sessions;

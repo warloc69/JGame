@@ -38,7 +38,7 @@ public class InputFieldUI : MonoBehaviour
 		}
 
 		Packet p = PacketBuilder.authRequestPacket (loginField.text, passField.text, 0);
-        AuthorizationClient.sendPacket(p);
+        NetManager.sendAuthorizationPacket(p);
 	}
 
 	public void onRegister()
@@ -61,7 +61,7 @@ public class InputFieldUI : MonoBehaviour
 		}
 
 		Packet p = PacketBuilder.authRequestPacket (loginField.text, passField.text, 1);
-        AuthorizationClient.sendPacket(p);
+        NetManager.sendAuthorizationPacket(p);
 	}
 	
 	public static void showWarningPopup(string text)

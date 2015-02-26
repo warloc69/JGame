@@ -2,8 +2,10 @@
 using System;
 using UnityEngine;
 
+/// Вспомогательный класс для обработки всех видов пакетов
 public class PacketHandler : MonoBehaviour
 {
+    /// Первичный парсинг номера пакета и отправка пакета в нужный обработчик
 	public static void handle(Packet pkt)
 	{
 		pkt.resetRead();
@@ -31,11 +33,9 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
+    /// Обработка ответа авторизации на сервер
     private static void handleAuthResponsePacket(Packet p)
     {
-        Debug.Log("PacketHandler::handleAuthResponsePacket start");
-
-        // parse packet
         byte authResponse = p.read<byte>();
         switch (authResponse)
         {

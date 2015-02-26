@@ -3,6 +3,8 @@
 
 #include <winsock2.h>
 
+#include "..\GameController\Packet.h"
+
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
@@ -35,6 +37,7 @@ class UDPServer
 		void receive_packet();
 		void on_receive_packet(const system::error_code& error, size_t n);
 		void accept_packet(const system::error_code& error, size_t n);
+		void send_packet(Packet& p);
 
 		strand m_strand;
 		udp::socket m_socket;

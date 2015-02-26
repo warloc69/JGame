@@ -4,9 +4,46 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
+/// Вспомогательный класс для генерации всех видов пакетов по входным данным
 public class PacketBuilder
 {
-	public static Packet gameObjectMove(Vector3 pos, Quaternion rot)
+    /// Пакет авторизации на сервер. На входе логин, пароль, байт запроса. Шифрует пароль.
+    public static Packet authRequestPacket(string clientName, string password, byte authRequest)
+    {
+        /// шифрование пароля
+        MD5 md5Hash = MD5.Create();
+        byte[] data = md5Hash.ComputeHash(Encoding.ASCII.GetBytes(password.Trim()));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < data.Length; i++)
+            sb.Append(data[i].ToString("x2"));
+
+        Packet p = new Packet();
+
+        p.write<byte>(53);
+        p.write<short>((short)Packets.C_PKT_AUTH_REQUEST);
+        p.write(clientName.Trim(), 20);
+        p.write(sb.ToString(), 32);
+        p.write<byte>(authRequest);
+        p.finalize();
+
+        return p;
+    }
+
+    /// Пакет дисконнекта с сервера
+    public static Packet disconnectPacket()
+    {
+        Packet p = new Packet();
+
+        p.write<byte>(0 + 32);
+        p.write<short>((short)Packets.C_PKT_DISCONNECT);
+        p.write(AuthorizationClient.sessionKey);
+        p.finalize();
+
+        return p;
+    }
+    
+    /// Пакет движения/поворота объекта игрока
+    public static Packet gameObjectMove(Vector3 pos, Quaternion rot)
 	{
 		Packet p = new Packet();
 
@@ -25,6 +62,7 @@ public class PacketBuilder
 		return p;
 	}
 
+    /// Пакет стрельбы. На входе идентификатор оружия и вектор направления стрельбы
 	public static Packet gameObjectFire(short armsID, Vector3 direction)
 	{
 		Packet p = new Packet ();
@@ -41,6 +79,7 @@ public class PacketBuilder
 		return p;
 	}
 
+    /// Пакет спавна объекта. На входе идентификатор ресурса, позиция, поворот и стартовая скорость объекта
 	public static Packet gameObjectSpawn(short resourceID, Vector3 position, Vector4 rotation, Vector3 velocity)
 	{
 		Packet p = new Packet ();
@@ -64,39 +103,4 @@ public class PacketBuilder
 		return p;
 	}
 
-	public static Packet authRequestPacket(string clientName, string password, byte authRequest)
-	{
-		/// convert password
-		MD5 md5Hash = MD5.Create ();
-		byte[] data = md5Hash.ComputeHash(Encoding.ASCII.GetBytes(password.Trim()));
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < data.Length; i++)
-			sb.Append(data[i].ToString("x2"));
-
-		Debug.Log (sb.ToString ());
-		///
-
-		Packet p = new Packet ();
-
-		p.write<byte> (53);
-		p.write<short> ((short)Packets.C_PKT_AUTH_REQUEST);
-		p.write(clientName.Trim(), 20);
-		p.write(sb.ToString(), 32);
-		p.write<byte> (authRequest);
-		p.finalize ();
-
-		return p;
-	}
-
-	public static Packet disconnectPacket()
-	{
-		Packet p = new Packet ();
-
-		p.write<byte> (0+32);
-		p.write<short> ((short)Packets.C_PKT_DISCONNECT);
-        p.write(AuthorizationClient.sessionKey);
-		p.finalize ();
-
-		return p;
-	}
 }
