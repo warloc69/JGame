@@ -46,15 +46,18 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Integration\AuthorizationResults.cs" />
-     <Compile Include="Assets\Scripts\Integration\BitConverter.cs" />
-     <Compile Include="Assets\Scripts\Integration\JavaClient.cs" />
-     <Compile Include="Assets\Scripts\Integration\Packet.cs" />
-     <Compile Include="Assets\Scripts\Integration\PacketBuilder.cs" />
-     <Compile Include="Assets\Scripts\Integration\PacketHandler.cs" />
-     <Compile Include="Assets\Scripts\Integration\Packets.cs" />
-     <Compile Include="Assets\Scripts\Integration\Queue.cs" />
+     <Compile Include="Assets\Scripts\Common\BitConverter.cs" />
+     <Compile Include="Assets\Scripts\Common\Packet.cs" />
+     <Compile Include="Assets\Scripts\Common\PacketBuilder.cs" />
+     <Compile Include="Assets\Scripts\Common\PacketHandler.cs" />
+     <Compile Include="Assets\Scripts\Common\Packets.cs" />
      <Compile Include="Assets\Scripts\Logger.cs" />
+     <Compile Include="Assets\Scripts\Network\AsyncUdpClient.cs" />
+     <Compile Include="Assets\Scripts\Network\AuthorizationClient.cs" />
+     <Compile Include="Assets\Scripts\Network\AuthorizationResults.cs" />
+     <Compile Include="Assets\Scripts\Network\NetManager.cs" />
+     <Compile Include="Assets\Scripts\Network\Queue.cs" />
+     <Compile Include="Assets\Scripts\Network\WorldClient.cs" />
      <Compile Include="Assets\Scripts\Objects\Camera.cs" />
      <Compile Include="Assets\Scripts\Objects\DynamicObject.cs" />
      <Compile Include="Assets\Scripts\Objects\Player.cs" />

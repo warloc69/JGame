@@ -3,42 +3,40 @@ using System.Collections;
 
 public class Player : MonoBehaviour 
 {
-	public float speed = 100;
-	public float rotationSpeed = 100;
-	private CharacterController controller;
 	public static bool isActive;
-
+    public float speed = 10.0F;
+    public float rotationSpeed = 10.0F;
+    float x1;
+    float y1;
 	void Start () 
 	{
-		controller = GetComponent<CharacterController> ();
-		controller.Move (transform.position);
+        
 	}
+  
 	
 	// Update is called once per frame
-	void Update () 
+	void FixedUpdate () 
 	{
-		if(!isActive)
-			return;
+		//if(!isActive)
+		//	return;
+        float z = Input.GetAxis("Vertical") * speed;
+        float x = Input.GetAxis("Horizontal") * rotationSpeed;
+        x *= Time.deltaTime;
+        z *= Time.deltaTime;
+        transform.Translate(x, 0, z);
+        x1 += Input.GetAxis("Mouse X") * speed * 0.5f;
+        y1 -= Input.GetAxis("Mouse Y") * speed * 0.5f;
 
+        //Rotate the camera to those angles 
+        var rotation = Quaternion.Euler(y1,x1,0);
+        transform.rotation = rotation;
 		// fire
-		if(Input.GetMouseButtonDown(0))
-		{
-            //AuthorizationClient.sendPacket(PacketBuilder.gameObjectFire((short)2, this.transform.forward));
-		}
+	//	if(Input.GetMouseButtonDown(0))
+	//	{
+	//		JavaClient.sendPacket(PacketBuilder.gameObjectFire((short) 2, this.transform.forward));
+	//	}
 
-		// rotate by mouse
-		if(Input.GetMouseButton(1))
-		{
-			float h = 2 * Input.GetAxis("Mouse X");
-			transform.Rotate(0, h, 0);
-		}
 		
-		float vertical = Input.GetAxis ("Vertical");
-		float horizontal = Input.GetAxis ("Horizontal");
-		if (vertical == 0 && horizontal == 0) return;
-		transform.Rotate (0, rotationSpeed * Time.deltaTime * horizontal, 0);
-		controller.Move (transform.forward * speed * Time.deltaTime * vertical);
-
-        //AuthorizationClient.sendPacket(PacketBuilder.gameObjectMove(this.transform.position, this.transform.rotation));
+	//	JavaClient.sendPacket(PacketBuilder.gameObjectMove(this.transform.position, this.transform.rotation));
 	}
 }
