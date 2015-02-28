@@ -25,7 +25,7 @@ void DataBase::init()
 	printf("Found database driver: %s\n", pDriver->getName().c_str());
 
 	if(!ping())
-		printf("WARNING! Couldn't connect to database!");
+		printf("WARNING! Couldn't connect to database!\n");
 }
 
 void DataBase::free()

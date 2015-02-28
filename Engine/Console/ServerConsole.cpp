@@ -35,7 +35,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	DataBase* db = DataBase::getInstance();
 	db->init();
-	printf("Initialized data base.\n");
 
 	GameController* gc = GameController::getInstance();
 	printf("Initialized game controller.\n");
