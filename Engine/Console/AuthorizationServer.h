@@ -31,7 +31,7 @@ struct UDPSession
 class AuthorizationServer : UDPServer
 {
 	public:
-		AuthorizationServer(short port, asio::io_service& service);
+		AuthorizationServer(short port, boost::asio::io_service& service);
 		~AuthorizationServer();
 
 		void handle_packet();

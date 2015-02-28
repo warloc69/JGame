@@ -1,6 +1,10 @@
 
 #include "AuthorizationServer.h"
 #include "WorldServer.h"
+#include "DataBase.h"
+
+#include "..\GameController\GameController.h"
+#pragma comment(lib, "GameController.lib")
 
 #include <tchar.h>
 
@@ -29,6 +33,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf("------------------------------------\n");
 	printf("------------------------------------\n\n");
 
+	DataBase* db = DataBase::getInstance();
+	db->init();
+	printf("Initialized data base.\n");
+
+	GameController* gc = GameController::getInstance();
+	printf("Initialized game controller.\n");
+
 	io_service service;
 
 	AuthorizationServer* authServer = new AuthorizationServer(AUTHORIZATION_PORT, service);
@@ -37,14 +48,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	WorldServer* worldServer = new WorldServer(WORLD_PORT, service);
 	printf("Loaded World(%d) server.\n", WORLD_PORT);
 
-	thread_group tAuthorizationGroup;
+	boost::thread_group tAuthorizationGroup;
 	for(int i = 0; i < AUTHORIZATION_THREADS_NUMBER; i++)
-		tAuthorizationGroup.create_thread(bind(&io_service::run, ref(service)));
+		tAuthorizationGroup.create_thread(boost::bind(&io_service::run, boost::ref(service)));
 	printf("Authorization(%d) server started(%d threads).\n", AUTHORIZATION_PORT, AUTHORIZATION_THREADS_NUMBER);
 
-	thread_group tWorldGroup;
+	boost::thread_group tWorldGroup;
 	for(int i = 0; i < WORLD_THREADS_NUMBER; i++)
-		tWorldGroup.create_thread(bind(&io_service::run, ref(service)));
+		tWorldGroup.create_thread(boost::bind(&io_service::run, boost::ref(service)));
 	printf("World(%d) server started(%d threads).\n", WORLD_PORT, WORLD_THREADS_NUMBER);
 
 	// read console input
@@ -64,6 +75,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	delete authServer;
 	delete worldServer;
+	gc->free();
+	db->free();
 
 	return 0;
 }

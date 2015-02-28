@@ -13,30 +13,42 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы исходного кода\DB">
+      <UniqueIdentifier>{292fa5cc-1f4b-49f2-9e79-13333f820e13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\UDP">
+      <UniqueIdentifier>{9bd67a2b-9675-42cd-a422-0ec7dc46417f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UDPServer.h">
-      <Filter>Файлы исходного кода</Filter>
+    <ClInclude Include="DataBase.h">
+      <Filter>Файлы исходного кода\DB</Filter>
     </ClInclude>
     <ClInclude Include="AuthorizationServer.h">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\UDP</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPServer.h">
+      <Filter>Файлы исходного кода\UDP</Filter>
     </ClInclude>
     <ClInclude Include="WorldServer.h">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\UDP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerConsole.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="UDPServer.cpp">
-      <Filter>Файлы исходного кода</Filter>
+    <ClCompile Include="DataBase.cpp">
+      <Filter>Файлы исходного кода\DB</Filter>
     </ClCompile>
     <ClCompile Include="AuthorizationServer.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\UDP</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPServer.cpp">
+      <Filter>Файлы исходного кода\UDP</Filter>
     </ClCompile>
     <ClCompile Include="WorldServer.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\UDP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

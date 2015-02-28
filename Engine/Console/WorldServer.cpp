@@ -6,7 +6,7 @@
 #include "..\GameController\Macro.h"
 
 /// Конструктор сервера мира
-WorldServer::WorldServer(short port, asio::io_service& service) : UDPServer(port, service)
+WorldServer::WorldServer(short port, boost::asio::io_service& service) : UDPServer(port, service)
 {
 }
 

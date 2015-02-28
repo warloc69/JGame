@@ -4,8 +4,6 @@
 #include "GameObject.h"
 #include "DynamicObject.h"
 #include <hash_map>
-#include <iostream>
-#include <boost\thread\thread.hpp>
 
 #include "PacketHandler.h"
 #include "Packets.h"

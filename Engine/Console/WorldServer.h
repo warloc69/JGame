@@ -6,7 +6,7 @@
 class WorldServer : UDPServer
 {
 	public:
-		WorldServer(short port, asio::io_service& service);
+		WorldServer(short port, boost::asio::io_service& service);
 
 		void handle_packet();
 };

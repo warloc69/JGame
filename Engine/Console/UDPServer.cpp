@@ -15,7 +15,7 @@ T SWAP_BYTES(T v)
 }
 
 /// Конструктор UDP сервера, на входе порт и уникальный IO сервис
-UDPServer::UDPServer(short port, asio::io_service& m_service) : m_socket(m_service, udp::endpoint(udp::v4(), port)), m_strand(m_service)
+UDPServer::UDPServer(short port, boost::asio::io_service& m_service) : m_socket(m_service, udp::endpoint(udp::v4(), port)), m_strand(m_service)
 {
 	union { unsigned int v; unsigned char c[4]; } u;
 	u.v = 0x01;
@@ -35,14 +35,14 @@ void UDPServer::receive_packet()
 }
 
 /// Срабатывает по получению пакета, откладывает обработку пакета и переходит к приёму следующего
-void UDPServer::on_receive_packet(const system::error_code& error, size_t n)
+void UDPServer::on_receive_packet(const boost::system::error_code& error, size_t n)
 {
-	m_socket.get_io_service().post(bind(&UDPServer::accept_packet, this, error, n));
+	m_socket.get_io_service().post(boost::bind(&UDPServer::accept_packet, this, error, n));
 	receive_packet();
 }
 
 /// Принимает, валидирует, конвертирует пакет
-void UDPServer::accept_packet(const system::error_code& error, size_t n)
+void UDPServer::accept_packet(const boost::system::error_code& error, size_t n)
 {
 	printf("received %d bytes\n", n);
 
@@ -74,7 +74,7 @@ void UDPServer::send_packet(Packet& p)
 }
 
 /// Срабатывает по отправке пакета клиенту
-void UDPServer::on_send_packet(const system::error_code& error, size_t n)
+void UDPServer::on_send_packet(const boost::system::error_code& error, size_t n)
 {
 	printf("Packet sent to client (%d bytes)\n", n);
 }

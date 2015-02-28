@@ -3,7 +3,6 @@
 
 #include <Wincrypt.h>
 
-#pragma comment(lib, "GameController.lib")
 #include "..\GameController\Macro.h"
 #include "..\GameController\Packets.h"
 
@@ -74,7 +73,7 @@ uint64 get_current_time()
 }
 
 /// Конструктор сервера авторизации
-AuthorizationServer::AuthorizationServer(short port, asio::io_service& service) : UDPServer(port, service)
+AuthorizationServer::AuthorizationServer(short port, boost::asio::io_service& service) : UDPServer(port, service)
 {
 }
 
@@ -142,9 +141,9 @@ void AuthorizationServer::handleAuthRequestPacket(Packet& p)
 
 	/// prepare data
 	std::string lg(login.begin(), login.end());
-	trim(lg);
+	boost::algorithm::trim(lg);
 	std::string ps(passw.begin(), passw.end());
-	trim(ps);
+	boost::algorithm::trim(ps);
 	printf("login=%s,pass=%s\n", lg.c_str(), ps.c_str());
 
 	/// find existing session/account

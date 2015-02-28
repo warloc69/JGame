@@ -60,6 +60,9 @@
     <ClInclude Include="Packets.h">
       <Filter>Файлы исходного кода\Packet</Filter>
     </ClInclude>
+    <ClInclude Include="PacketBuilder.h">
+      <Filter>Файлы исходного кода\Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vectors.cpp">
@@ -75,6 +78,9 @@
       <Filter>Файлы исходного кода\Common</Filter>
     </ClCompile>
     <ClCompile Include="PacketHandler.cpp">
+      <Filter>Файлы исходного кода\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketBuilder.cpp">
       <Filter>Файлы исходного кода\Packet</Filter>
     </ClCompile>
   </ItemGroup>

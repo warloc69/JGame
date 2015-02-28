@@ -3,7 +3,6 @@
 #include "Macro.h"
 
 #include <assert.h>
-#include <Windows.h>
 
 // global singleton instance of GameController
 static GameController* pGameController = GameController::getInstance();

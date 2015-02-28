@@ -8,7 +8,7 @@
 /Engine/Console/Debug
 /Engine/Console/x64/Debug
 /Engine/Integration/Debug
-/Engine/Engine/Debug
+
 /Engine/GameController/x64/Debug
 
 /Engine/GameController/Debug
@@ -16,3 +16,8 @@
 /Engine/Integration/x64/Debug
 
 /Engine/Engine/x64/Debug
+
+Debug
+/Server/*.log
+/Engine/Engine/*.vsp
+/Engine/Engine/*.psess
