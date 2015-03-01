@@ -1,0 +1,17 @@
+﻿Build started 22.02.2015 23:00:52.
+     1>Project "C:\Users\ivanchenko\Documents\GitHub\JGame\Engine\GameController\GameController.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I\include\win32 /I\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D GAMECONTROLLER_EXPORTS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /FR"Debug\\" /Gd /TP /analyze- /errorReport:prompt GameController.cpp GameObject.cpp PacketHandler.cpp StackTracer.cpp Vectors.cpp
+         Vectors.cpp
+         StackTracer.cpp
+         PacketHandler.cpp
+     1>c:\users\ivanchenko\documents\github\jgame\engine\gamecontroller\gamecontroller.h(8): fatal error C1083: Cannot open include file: 'boost\thread\thread.hpp': No such file or directory
+         GameObject.cpp
+         GameController.cpp
+     1>c:\users\ivanchenko\documents\github\jgame\engine\gamecontroller\gamecontroller.h(8): fatal error C1083: Cannot open include file: 'boost\thread\thread.hpp': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Users\ivanchenko\Documents\GitHub\JGame\Engine\GameController\GameController.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:05.51
